@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabase.js'
 
 export default function Home() {
   const [user, setUser] = useState(null)
