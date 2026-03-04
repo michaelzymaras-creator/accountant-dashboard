@@ -1,0 +1,53 @@
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+
+export default function Home() {
+  const [user, setUser] = useState(null)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const signIn = async () => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+    if (error) alert(error.message)
+    else setUser(data.user)
+  }
+
+  const signOut = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+    setEmail('')
+    setPassword('')
+  }
+
+  return (
+    <div style={{ maxWidth: 400, margin: '50px auto', fontFamily: 'Arial, sans-serif' }}>
+      {!user ? (
+        <>
+          <h2>Σύνδεση Λογιστή</h2>
+          <input 
+            placeholder="Email" 
+            value={email} 
+            onChange={e => setEmail(e.target.value)} 
+            style={{ width: '100%', padding: '8px', margin: '8px 0' }}
+          />
+          <input 
+            type="password" 
+            placeholder="Password" 
+            value={password} 
+            onChange={e => setPassword(e.target.value)} 
+            style={{ width: '100%', padding: '8px', margin: '8px 0' }}
+          />
+          <button onClick={signIn} style={{ width: '100%', padding: '10px', marginTop: 10 }}>Σύνδεση</button>
+        </>
+      ) : (
+        <>
+          <h2>Καλώς ήρθες, {user.email}</h2>
+          <button onClick={signOut} style={{ width: '100%', padding: '10px', marginTop: 10 }}>Αποσύνδεση</button>
+        </>
+      )}
+    </div>
+  )
+}
