@@ -45,6 +45,7 @@ const fetchClients = async (userId) => {
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
+    .eq('month', selectedMonth)
 
   if (data) setClients(data)
 }
