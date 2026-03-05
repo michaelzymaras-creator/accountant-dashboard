@@ -165,6 +165,11 @@ const filteredClients = clients
           </div>
         </div>
 
+<div className="mb-6">
+  <label className="block text-sm font-semibold mb-1">
+    Επιλογή Μήνα
+  </label>
+  
 <input
   type="month"
   value={selectedMonth}
