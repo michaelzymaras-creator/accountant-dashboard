@@ -44,7 +44,6 @@ const fetchClients = async (userId) => {
     .from('clients')
     .select('*')
     .eq('user_id', userId)
-    .eq('month', selectedMonth)
     .order('created_at', { ascending: false })
 
   if (data) setClients(data)
