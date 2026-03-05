@@ -151,11 +151,14 @@ export default function Home() {
               value={afm}
               onChange={e => setAfm(e.target.value)}
             />
-            <input className="border p-2 rounded-lg"
-              placeholder="Μηνιαία Αμοιβή"
-              value={fee}
-              onChange={e => setFee(e.target.value)}
-            />
+            <input
+  type="number"
+  step="0.01"
+  className="border p-2 rounded-lg"
+  placeholder="Μηνιαία Αμοιβή"
+  value={fee}
+  onChange={e => setFee(e.target.value)}
+/>    
           </div>
 
           <div className="mt-4">
