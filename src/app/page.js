@@ -169,13 +169,14 @@ const filteredClients = clients
   <label className="block text-sm font-semibold mb-1">
     Επιλογή Μήνα
   </label>
-  
-<input
-  type="month"
-  value={selectedMonth}
-  onChange={(e) => setSelectedMonth(e.target.value)}
-  className="border p-2 rounded-lg mb-6"
-/>
+
+  <input
+    type="month"
+    value={selectedMonth}
+    onChange={(e) => setSelectedMonth(e.target.value)}
+    className="border p-2 rounded-lg"
+  />
+</div>
         {/* Add Client Card */}
         <div className="bg-white p-6 rounded-2xl shadow mb-8">
           <h2 className="font-semibold mb-4">Προσθήκη Πελάτη</h2>
