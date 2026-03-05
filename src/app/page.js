@@ -49,7 +49,7 @@ const fetchClients = async (userId) => {
 
   if (data) setClients(data)
 }
-const addClient = async () => {
+  const addClient = async () => {
     if (!name) return alert("Βάλε όνομα")
 
     setLoading(true)
@@ -319,5 +319,7 @@ const filteredClients = clients
     </tbody>
   </table>
 </div>
+      </div>
+    </div>
   )
 }
