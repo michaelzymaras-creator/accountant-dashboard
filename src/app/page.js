@@ -11,11 +11,14 @@ export default function Home() {
   const [vatEnabled, setVatEnabled] = useState(false)
   const [notes, setNotes] = useState('')
   const [showUnpaid, setShowUnpaid] = useState(false)
+  const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    checkUser()
-  }, [])
+const [selectedMonth, setSelectedMonth] = useState(
+  new Date().toISOString().slice(0,7)
+)
+ useEffect(() => {
+  checkUser()
+}, [selectedMonth])
 
   const checkUser = async () => {
     const { data } = await supabase.auth.getUser()
@@ -36,14 +39,16 @@ export default function Home() {
     }
   }
 
-  const fetchClients = async (userId) => {
-    const { data } = await supabase
-      .from('clients')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+const fetchClients = async (userId) => {
+  const { data } = await supabase
+    .from('clients')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('month', selectedMonth)
+    .order('created_at', { ascending: false })
 
-    if (data) setClients(data)
+  if (data) setClients(data)
+}
   }
 
   const addClient = async () => {
@@ -60,7 +65,8 @@ export default function Home() {
         payment_status: 'pending',
         vat_enabled: vatEnabled,
         vat_submitted: false,
-        notes
+        notes,
+        month: selectedMonth
       }
     ]).select()
 
@@ -73,6 +79,29 @@ export default function Home() {
     setLoading(false)
   }
 
+  const createNewMonth = async () => {
+
+  if (!clients.length) {
+    alert("Δεν υπάρχουν πελάτες για αντιγραφή")
+    return
+  }
+
+  const newClients = clients.map(c => ({
+    user_id: user.id,
+    name: c.name,
+    afm: c.afm,
+    monthly_fee: c.monthly_fee,
+    payment_status: 'pending',
+    vat_enabled: c.vat_enabled,
+    vat_submitted: false,
+    notes: c.notes,
+    month: selectedMonth
+  }))
+
+  await supabase.from('clients').insert(newClients)
+
+  fetchClients(user.id)
+}
   const togglePayment = async (client) => {
     await supabase
       .from('clients')
@@ -101,9 +130,11 @@ export default function Home() {
     fetchClients(user.id)
   }
 
-  const filteredClients = showUnpaid
-    ? clients.filter(c => c.payment_status === 'pending')
-    : clients
+const filteredClients = clients
+  .filter(c => !showUnpaid || c.payment_status === 'pending')
+  .filter(c =>
+    c.name.toLowerCase().includes(search.toLowerCase())
+  )
 
   const totalIncome = clients
     .filter(c => c.payment_status === 'paid')
@@ -136,6 +167,12 @@ export default function Home() {
           </div>
         </div>
 
+<input
+  type="month"
+  value={selectedMonth}
+  onChange={(e) => setSelectedMonth(e.target.value)}
+  className="border p-2 rounded-lg mb-6"
+/>
         {/* Add Client Card */}
         <div className="bg-white p-6 rounded-2xl shadow mb-8">
           <h2 className="font-semibold mb-4">Προσθήκη Πελάτη</h2>
@@ -188,6 +225,19 @@ export default function Home() {
           </button>
         </div>
 
+<button
+  onClick={createNewMonth}
+  className="mb-4 bg-green-600 text-white px-4 py-2 rounded-xl"
+>
+  📅 Δημιουργία Μήνα
+</button>
+<input
+  type="text"
+  placeholder="🔎 Αναζήτηση πελάτη"
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  className="border p-2 rounded-lg mb-4 w-full"
+/>
         <button
           onClick={() => setShowUnpaid(!showUnpaid)}
           className="mb-6 bg-gray-800 text-white px-4 py-2 rounded-xl"
@@ -195,62 +245,81 @@ export default function Home() {
           {showUnpaid ? "Δείξε Όλους" : "Μόνο Απλήρωτοι"}
         </button>
 
-        {/* Client Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredClients.map(client => (
-            <div key={client.id} className="bg-white p-6 rounded-2xl shadow">
+        <div className="bg-white rounded-2xl shadow overflow-hidden">
+  <table className="w-full">
 
-              <h3 className="text-xl font-bold mb-2">{client.name}</h3>
-              <p className="text-sm text-gray-500 mb-2">ΑΦΜ: {client.afm}</p>
-              <p className="font-semibold mb-2">{client.monthly_fee} €</p>
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="p-3 text-left">Πελάτης</th>
+        <th className="p-3 text-left">ΑΦΜ</th>
+        <th className="p-3 text-left">Αμοιβή</th>
+        <th className="p-3 text-left">Πληρωμή</th>
+        <th className="p-3 text-left">ΦΠΑ</th>
+        <th className="p-3 text-left">Ενέργειες</th>
+      </tr>
+    </thead>
 
-              <p className="mb-2">
-                {client.payment_status === 'paid'
-                  ? '✅ Πληρώθηκε'
-                  : '❌ Εκκρεμεί'}
-              </p>
+    <tbody>
 
+      {filteredClients.map(client => (
+        <tr key={client.id} className="border-t">
+
+          <td className="p-3 font-semibold">
+            {client.name}
+          </td>
+
+          <td className="p-3">
+            {client.afm}
+          </td>
+
+          <td className="p-3">
+            {client.monthly_fee} €
+          </td>
+
+          <td className="p-3">
+            {client.payment_status === 'paid'
+              ? '✅'
+              : '❌'}
+          </td>
+
+          <td className="p-3">
+            {client.vat_enabled
+              ? (client.vat_submitted ? '📤' : '⚠')
+              : '-'}
+          </td>
+
+          <td className="p-3 space-x-3">
+
+            <button
+              onClick={() => togglePayment(client)}
+              className="text-blue-600 text-sm"
+            >
+              Πληρωμή
+            </button>
+
+            {client.vat_enabled && (
               <button
-                onClick={() => togglePayment(client)}
-                className="text-blue-600 text-sm mr-3"
+                onClick={() => toggleVatSubmitted(client)}
+                className="text-purple-600 text-sm"
               >
-                Αλλαγή Πληρωμής
+                ΦΠΑ
               </button>
+            )}
 
-              {client.vat_enabled && (
-                <div className="mt-2">
-                  <p>
-                    {client.vat_submitted
-                      ? '📤 ΦΠΑ Υποβλήθηκε'
-                      : '⚠ ΦΠΑ Εκκρεμεί'}
-                  </p>
-                  <button
-                    onClick={() => toggleVatSubmitted(client)}
-                    className="text-purple-600 text-sm"
-                  >
-                    Αλλαγή ΦΠΑ
-                  </button>
-                </div>
-              )}
+            <button
+              onClick={() => deleteClient(client.id)}
+              className="text-red-600 text-sm"
+            >
+              Διαγραφή
+            </button>
 
-              {client.notes && (
-                <p className="mt-3 text-sm italic text-gray-600">
-                  📝 {client.notes}
-                </p>
-              )}
+          </td>
 
-              <button
-                onClick={() => deleteClient(client.id)}
-                className="mt-4 text-red-600 text-sm"
-              >
-                Διαγραφή
-              </button>
+        </tr>
+      ))}
 
-            </div>
-          ))}
-        </div>
-
-      </div>
-    </div>
+    </tbody>
+  </table>
+</div>
   )
 }
