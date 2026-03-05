@@ -137,7 +137,8 @@ const filteredClients = clients
   const totalIncome = clients
     .filter(c => c.payment_status === 'paid')
     .reduce((sum, c) => sum + Number(c.monthly_fee || 0), 0)
-
+    .toFixed(2)
+    
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
