@@ -4,10 +4,20 @@ import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase.js'
+import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
 
 export default function Home() {
   const [editingClient, setEditingClient] = useState(null)
   const [user, setUser] = useState(null)
+  const totalClients = clients.length
+
+const unpaidClients = clients.filter(
+  c => c.payment_status === 'pending'
+).length
+
+const vatPending = clients.filter(
+  c => c.vat_enabled && !c.vat_submitted
+).length
   const [clients, setClients] = useState([])
   const [name, setName] = useState('')
   const [afm, setAfm] = useState('')
@@ -253,7 +263,12 @@ const filteredClients = clients
     .filter(c => c.payment_status === 'paid')
     .reduce((sum, c) => sum + Number(c.monthly_fee || 0), 0)
     .toFixed(2)
-    
+  const chartData = [
+  {
+    name: "Έσοδα",
+    amount: Number(totalIncome)
+  }
+]  
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -275,6 +290,35 @@ const filteredClients = clients
       <div className="max-w-6xl mx-auto">
 
         <div className="flex justify-between items-center mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+
+<div className="bg-white p-4 rounded-xl shadow">
+  <div className="text-gray-500 text-sm">Πελάτες</div>
+  <div className="text-2xl font-bold">{totalClients}</div>
+</div>
+
+<div className="bg-white p-4 rounded-xl shadow">
+  <div className="text-gray-500 text-sm">Απλήρωτοι</div>
+  <div className="text-2xl font-bold text-red-600">
+    {unpaidClients}
+  </div>
+</div>
+
+<div className="bg-white p-4 rounded-xl shadow">
+  <div className="text-gray-500 text-sm">ΦΠΑ εκκρεμεί</div>
+  <div className="text-2xl font-bold text-orange-500">
+    {vatPending}
+  </div>
+</div>
+
+<div className="bg-white p-4 rounded-xl shadow">
+  <div className="text-gray-500 text-sm">Έσοδα μήνα</div>
+  <div className="text-2xl font-bold text-green-600">
+    {totalIncome} €
+  </div>
+</div>
+
+</div>
         <h1 className="text-3xl font-bold">Πελάτες</h1>
 
         <div className="text-xl font-semibold text-green-600">
@@ -324,6 +368,18 @@ const filteredClients = clients
   />
 </div>
         {/* Add Client Card */}
+        <div className="bg-white p-6 rounded-2xl shadow mb-8">
+
+<h2 className="font-semibold mb-4">Έσοδα Μήνα</h2>
+
+<BarChart width={500} height={250} data={chartData}>
+  <XAxis dataKey="name" />
+  <YAxis />
+  <Tooltip />
+  <Bar dataKey="amount" />
+</BarChart>
+
+</div>
         <div className="bg-white p-6 rounded-2xl shadow mb-8">
           <h2 className="font-semibold mb-4">Προσθήκη Πελάτη</h2>
 
