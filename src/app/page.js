@@ -246,8 +246,38 @@ const filteredClients = clients
       <div className="max-w-6xl mx-auto">
 
         <div className="flex justify-between items-center mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+
+<div className="bg-white p-4 rounded-xl shadow">
+<div className="text-gray-500 text-sm">Πελάτες</div>
+<div className="text-2xl font-bold">{clients.length}</div>
+</div>
+
+<div className="bg-white p-4 rounded-xl shadow">
+<div className="text-gray-500 text-sm">Πληρωμένοι</div>
+<div className="text-2xl font-bold text-green-600">
+{clients.filter(c => c.payment_status === 'paid').length}
+</div>
+</div>
+
+<div className="bg-white p-4 rounded-xl shadow">
+<div className="text-gray-500 text-sm">Απλήρωτοι</div>
+<div className="text-2xl font-bold text-red-600">
+{clients.filter(c => c.payment_status === 'pending').length}
+</div>
+</div>
+
+<div className="bg-white p-4 rounded-xl shadow">
+<div className="text-gray-500 text-sm">ΦΠΑ εκκρεμεί</div>
+<div className="text-2xl font-bold text-orange-600">
+{clients.filter(c => c.vat_enabled && !c.vat_submitted).length}
+</div>
+</div>
+
+</div>
           <h1 className="text-3xl font-bold">Πελάτες</h1>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 mb-6">
+
 
 <div className="bg-white p-4 rounded-xl shadow">
 <div className="text-sm text-gray-500">Πελάτες</div>
