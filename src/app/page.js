@@ -387,7 +387,7 @@ const filteredClients = clients
           </div>
           <select
           className="border p-2 rounded-lg w-full mb-3"
-          value={editingClient.vat_type || "monthly"}
+          value={editingClient?.vat_type || "monthly"}
           onChange={(e)=>
           setEditingClient({...editingClient, vat_type:e.target.value})
         }
