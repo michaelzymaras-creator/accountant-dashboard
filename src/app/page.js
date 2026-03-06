@@ -258,10 +258,14 @@ const filteredClients = clients
     .toFixed(2)
   const chartData = [
   {
-    name: "Έσοδα",
-    amount: Number(totalIncome)
+    name: "Πληρωμένοι",
+    value: clients.filter(c => c.payment_status === 'paid').length
+  },
+  {
+    name: "Απλήρωτοι",
+    value: clients.filter(c => c.payment_status === 'pending').length
   }
-]  
+]
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -366,11 +370,22 @@ const filteredClients = clients
         <h2 className="font-semibold mb-4">Έσοδα Μήνα</h2>
 
           <BarChart width={500} height={250} data={chartData}>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="amount" />
-          </BarChart>
+         <XAxis dataKey="name" />
+         <YAxis />
+         <Tooltip />
+         <Bar dataKey="value" />
+         </BarChart>
+
+         <h2 className="font-semibold mb-4 mt-6">Έσοδα Μήνα</h2>
+
+<BarChart width={500} height={250} data={[
+  { name: "Έσοδα", amount: Number(totalIncome) }
+]}>
+  <XAxis dataKey="name" />
+  <YAxis />
+  <Tooltip />
+  <Bar dataKey="amount" />
+</BarChart>
 
 </div>
         <div className="bg-white p-6 rounded-2xl shadow mb-8">
