@@ -17,6 +17,22 @@ export default function Home() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0,7))
+  const viewHistory = async (client) => {
+
+  const { data } = await supabase
+    .from('payments')
+    .select('*')
+    .eq('client_name', client.name)
+    .order('month', { ascending: false })
+
+  let message = ""
+
+  data.forEach(p => {
+    message += `${p.month} : ${p.status === 'paid' ? "✅" : "❌"}\n`
+  })
+
+  alert(message)
+}
 
  useEffect(() => {
   checkUser()
@@ -105,6 +121,15 @@ const fetchClients = async (userId) => {
   if (!lastMonthClients.length) {
     alert("Δεν υπάρχουν πελάτες για αντιγραφή")
     return
+    for (const client of newClients) {
+  await supabase.from('payments').insert({
+    user_id: user.id,
+    client_name: client.name,
+    month: selectedMonth,
+    amount: client.monthly_fee,
+    status: 'pending'
+  })
+}
   }
 
   const newClients = lastMonthClients.map(c => ({
@@ -124,15 +149,23 @@ const fetchClients = async (userId) => {
   fetchClients(user.id)
 }
   const togglePayment = async (client) => {
-    await supabase
-      .from('clients')
-      .update({
-        payment_status: client.payment_status === 'paid' ? 'pending' : 'paid'
-      })
-      .eq('id', client.id)
 
-    fetchClients(user.id)
-  }
+  const newStatus =
+    client.payment_status === 'paid' ? 'pending' : 'paid'
+
+  await supabase
+    .from('clients')
+    .update({ payment_status: newStatus })
+    .eq('id', client.id)
+
+  await supabase
+    .from('payments')
+    .update({ status: newStatus })
+    .eq('client_name', client.name)
+    .eq('month', selectedMonth)
+
+  fetchClients(user.id)
+}
 
   const toggleVatSubmitted = async (client) => {
     await supabase
@@ -288,13 +321,13 @@ const filteredClients = clients
               onChange={e => setAfm(e.target.value)}
             />
             <input
-  type="number"
-  step="0.01"
-  className="border p-2 rounded-lg"
-  placeholder="Μηνιαία Αμοιβή"
-  value={fee}
-  onChange={e => setFee(e.target.value)}
-/>    
+               type="number"
+                step="0.01"
+                className="border p-2 rounded-lg"
+                placeholder="Μηνιαία Αμοιβή"
+                value={fee}
+                onChange={e => setFee(e.target.value)}
+            />    
           </div>
 
           <div className="mt-4">
@@ -338,6 +371,13 @@ onClick={exportPDF}
 className="bg-blue-600 text-white px-4 py-2 rounded-xl"
 >
 📄 Export PDF
+</button>
+
+<button
+  onClick={() => viewHistory(client)}
+  className="text-gray-600 text-sm"
+>
+  Ιστορικό
 </button>
 
 </div>
