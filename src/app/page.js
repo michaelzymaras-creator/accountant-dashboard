@@ -25,6 +25,7 @@ export default function Home() {
   const [afm, setAfm] = useState('')
   const [fee, setFee] = useState('')
   const [vatEnabled, setVatEnabled] = useState(false)
+  const [vatType, setVatType] = useState('monthly')
   const [notes, setNotes] = useState('')
   const [showUnpaid, setShowUnpaid] = useState(false)
   const [search, setSearch] = useState('')
@@ -115,6 +116,7 @@ const fetchClients = async (userId) => {
         payment_status: 'pending',
         vat_enabled: vatEnabled,
         vat_submitted: false,
+        vat_type: vatType,
         notes,
         month: selectedMonth
       }
@@ -212,8 +214,9 @@ const fetchClients = async (userId) => {
       name: editingClient.name,
       afm: editingClient.afm,
       monthly_fee: editingClient.monthly_fee,
+      vat_type: editingClient.vat_type,
       notes: editingClient.notes
-    })
+      })
     .eq('id', editingClient.id)
 
   if (error) {
@@ -364,6 +367,16 @@ const filteredClients = clients
 
           <div className="mt-4">
             <label className="flex items-center gap-2">
+              {vatEnabled && (
+              <select
+              className="border p-2 rounded-lg mt-2"
+              value={vatType}
+              onChange={(e)=>setVatType(e.target.value)}
+              >
+              <option value="monthly">Μηνιαίο ΦΠΑ</option>
+              <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+              </select>
+          )}
               <input
                 type="checkbox"
                 checked={vatEnabled}
@@ -372,7 +385,16 @@ const filteredClients = clients
               Έχει ΦΠΑ
             </label>
           </div>
-
+          <select
+          className="border p-2 rounded-lg w-full mb-3"
+          value={editingClient.vat_type || "monthly"}
+          onChange={(e)=>
+          setEditingClient({...editingClient, vat_type:e.target.value})
+        }
+          >
+          <option value="monthly">Μηνιαίο ΦΠΑ</option>
+          <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+          </select>
           <textarea
             className="border p-2 rounded-lg w-full mt-4"
             placeholder="Παρατηρήσεις"
