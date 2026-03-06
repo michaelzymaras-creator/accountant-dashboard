@@ -85,6 +85,45 @@ const fetchClients = async (userId) => {
 
   const createNewMonth = async () => {
 
+  const { data: existing } = await supabase
+    .from('clients')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('month', selectedMonth)
+
+  if (existing.length > 0) {
+    alert("Ο μήνας υπάρχει ήδη!")
+    return
+  }
+
+  const { data: lastMonthClients } = await supabase
+    .from('clients')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+
+  if (!lastMonthClients.length) {
+    alert("Δεν υπάρχουν πελάτες για αντιγραφή")
+    return
+  }
+
+  const newClients = lastMonthClients.map(c => ({
+    user_id: user.id,
+    name: c.name,
+    afm: c.afm,
+    monthly_fee: c.monthly_fee,
+    payment_status: 'pending',
+    vat_enabled: c.vat_enabled,
+    vat_submitted: false,
+    notes: c.notes,
+    month: selectedMonth
+  }))
+
+  await supabase.from('clients').insert(newClients)
+
+  fetchClients(user.id)
+}
+
   if (!clients.length) {
     alert("Δεν υπάρχουν πελάτες για αντιγραφή")
     return
