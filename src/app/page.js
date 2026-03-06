@@ -9,16 +9,18 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
 export default function Home() {
   const [editingClient, setEditingClient] = useState(null)
   const [user, setUser] = useState(null)
-  const totalClients = clients.length
+  
 
-const unpaidClients = clients.filter(
-  c => c.payment_status === 'pending'
-).length
 
-const vatPending = clients.filter(
-  c => c.vat_enabled && !c.vat_submitted
-).length
   const [clients, setClients] = useState([])
+  const totalClients = clients.length
+    const unpaidClients = clients.filter(
+      c => c.payment_status === 'pending'
+      ).length
+
+    const vatPending = clients.filter(
+      c => c.vat_enabled && !c.vat_submitted
+      ).length
   const [name, setName] = useState('')
   const [afm, setAfm] = useState('')
   const [fee, setFee] = useState('')
@@ -149,16 +151,7 @@ const fetchClients = async (userId) => {
   if (!lastMonthClients.length) {
     alert("Δεν υπάρχουν πελάτες για αντιγραφή")
     return
-    for (const client of newClients) {
-  await supabase.from('payments').insert({
-    user_id: user.id,
-    client_name: client.name,
-    month: selectedMonth,
-    amount: client.monthly_fee,
-    status: 'pending'
-  })
-}
-  }
+    }
 
   const newClients = lastMonthClients.map(c => ({
     user_id: user.id,
@@ -370,14 +363,14 @@ const filteredClients = clients
         {/* Add Client Card */}
         <div className="bg-white p-6 rounded-2xl shadow mb-8">
 
-<h2 className="font-semibold mb-4">Έσοδα Μήνα</h2>
+        <h2 className="font-semibold mb-4">Έσοδα Μήνα</h2>
 
-<BarChart width={500} height={250} data={chartData}>
-  <XAxis dataKey="name" />
-  <YAxis />
-  <Tooltip />
-  <Bar dataKey="amount" />
-</BarChart>
+          <BarChart width={500} height={250} data={chartData}>
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey="amount" />
+          </BarChart>
 
 </div>
         <div className="bg-white p-6 rounded-2xl shadow mb-8">
@@ -452,13 +445,6 @@ onClick={exportExcel}
 className="bg-black text-white px-4 py-2 rounded-xl mb-4"
 >
 📥 Export Excel
-</button>
-
-<button
-  onClick={() => viewHistory(client)}
-  className="bg-yellow-600 text-white px-4 py-2 rounded-xl"
->
-  Ιστορικό
 </button>
 
 </div>
