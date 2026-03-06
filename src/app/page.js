@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase.js'
 
 export default function Home() {
+  const [editingClient, setEditingClient] = useState(null)
   const [user, setUser] = useState(null)
   const [clients, setClients] = useState([])
   const [name, setName] = useState('')
@@ -15,9 +16,8 @@ export default function Home() {
   const [showUnpaid, setShowUnpaid] = useState(false)
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
-const [selectedMonth, setSelectedMonth] = useState(
-  new Date().toISOString().slice(0,7)
-)
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0,7))
+
  useEffect(() => {
   checkUser()
 }, [])
@@ -133,6 +133,26 @@ const fetchClients = async (userId) => {
     await supabase.from('clients').delete().eq('id', id)
     fetchClients(user.id)
   }
+  const updateClient = async () => {
+
+  const { error } = await supabase
+    .from('clients')
+    .update({
+      name: editingClient.name,
+      afm: editingClient.afm,
+      monthly_fee: editingClient.monthly_fee,
+      notes: editingClient.notes
+    })
+    .eq('id', editingClient.id)
+
+  if (error) {
+    alert(error.message)
+    return
+  }
+
+  setEditingClient(null)
+  fetchClients(user.id)
+}
   const exportPDF = () => {
 
   const doc = new jsPDF()
@@ -372,6 +392,12 @@ const filteredClients = clients
                 ΦΠΑ
               </button>
             )}
+            <button
+              onClick={() => setEditingClient(client)}
+              className="text-green-600 text-sm"
+            >
+              Edit
+            </button>
 
             <button
               onClick={() => deleteClient(client.id)}
@@ -389,6 +415,67 @@ const filteredClients = clients
   </table>
 </div>
       </div>
+      {editingClient && (
+  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+
+    <div className="bg-white p-6 rounded-xl w-96">
+
+      <h2 className="text-xl font-bold mb-4">Επεξεργασία Πελάτη</h2>
+
+      <input
+        className="border p-2 rounded-lg w-full mb-3"
+        value={editingClient.name}
+        onChange={(e) =>
+          setEditingClient({ ...editingClient, name: e.target.value })
+        }
+      />
+
+      <input
+        className="border p-2 rounded-lg w-full mb-3"
+        value={editingClient.afm}
+        onChange={(e) =>
+          setEditingClient({ ...editingClient, afm: e.target.value })
+        }
+      />
+
+      <input
+        className="border p-2 rounded-lg w-full mb-3"
+        value={editingClient.monthly_fee}
+        onChange={(e) =>
+          setEditingClient({ ...editingClient, monthly_fee: e.target.value })
+        }
+      />
+
+      <textarea
+        className="border p-2 rounded-lg w-full mb-3"
+        value={editingClient.notes || ''}
+        onChange={(e) =>
+          setEditingClient({ ...editingClient, notes: e.target.value })
+        }
+      />
+
+      <div className="flex justify-end gap-3">
+
+        <button
+          onClick={() => setEditingClient(null)}
+          className="px-4 py-2 bg-gray-300 rounded-lg"
+        >
+          Ακύρωση
+        </button>
+
+        <button
+          onClick={updateClient}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+        >
+          Αποθήκευση
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
     </div>
   )
 }
