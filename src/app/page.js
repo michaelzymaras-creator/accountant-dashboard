@@ -85,22 +85,22 @@ const fetchClients = async (userId) => {
 
   const createNewMonth = async () => {
 
-  const { data: existing } = await supabase
-    .from('clients')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('month', selectedMonth)
+    const { data: existing } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('month', selectedMonth)
 
   if (existing.length > 0) {
     alert("Ο μήνας υπάρχει ήδη!")
     return
   }
 
-  const { data: lastMonthClients } = await supabase
-    .from('clients')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
+    const { data: lastMonthClients } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
 
   if (!lastMonthClients.length) {
     alert("Δεν υπάρχουν πελάτες για αντιγραφή")
@@ -123,11 +123,6 @@ const fetchClients = async (userId) => {
 
   fetchClients(user.id)
 }
-
-  if (!clients.length) {
-    alert("Δεν υπάρχουν πελάτες για αντιγραφή")
-    return
-  }
 
   const newClients = clients.map(c => ({
     user_id: user.id,
@@ -246,38 +241,13 @@ const filteredClients = clients
       <div className="max-w-6xl mx-auto">
 
         <div className="flex justify-between items-center mb-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <h1 className="text-3xl font-bold">Πελάτες</h1>
 
-<div className="bg-white p-4 rounded-xl shadow">
-<div className="text-gray-500 text-sm">Πελάτες</div>
-<div className="text-2xl font-bold">{clients.length}</div>
-</div>
-
-<div className="bg-white p-4 rounded-xl shadow">
-<div className="text-gray-500 text-sm">Πληρωμένοι</div>
-<div className="text-2xl font-bold text-green-600">
-{clients.filter(c => c.payment_status === 'paid').length}
-</div>
-</div>
-
-<div className="bg-white p-4 rounded-xl shadow">
-<div className="text-gray-500 text-sm">Απλήρωτοι</div>
-<div className="text-2xl font-bold text-red-600">
-{clients.filter(c => c.payment_status === 'pending').length}
-</div>
-</div>
-
-<div className="bg-white p-4 rounded-xl shadow">
-<div className="text-gray-500 text-sm">ΦΠΑ εκκρεμεί</div>
-<div className="text-2xl font-bold text-orange-600">
-{clients.filter(c => c.vat_enabled && !c.vat_submitted).length}
-</div>
-</div>
-
-</div>
-          <h1 className="text-3xl font-bold">Πελάτες</h1>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 mb-6">
-
+        <div className="text-xl font-semibold text-green-600">
+            Σύνολο Εισπραγμένων: {totalIncome} €
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 
 <div className="bg-white p-4 rounded-xl shadow">
 <div className="text-sm text-gray-500">Πελάτες</div>
@@ -306,10 +276,6 @@ const filteredClients = clients
 </div>
 
 </div>
-          <div className="text-xl font-semibold text-green-600">
-            Σύνολο Εισπραγμένων: {totalIncome} €
-          </div>
-        </div>
 
 <div className="mb-6">
   <label className="block text-sm font-semibold mb-1">
@@ -375,18 +341,24 @@ const filteredClients = clients
           </button>
         </div>
 
+<div className="flex gap-4 mb-4">
+
 <button
-  onClick={createNewMonth}
-  className="mb-4 bg-green-600 text-white px-4 py-2 rounded-xl"
+onClick={createNewMonth}
+className="bg-green-600 text-white px-4 py-2 rounded-xl"
 >
-  <button
-  onClick={exportPDF}
-  className="mb-4 ml-4 bg-blue-600 text-white px-4 py-2 rounded-xl"
+📅 Δημιουργία Μήνα
+</button>
+
+<button
+onClick={exportPDF}
+className="bg-blue-600 text-white px-4 py-2 rounded-xl"
 >
-  📄 Export PDF
+📄 Export PDF
 </button>
-  📅 Δημιουργία Μήνα
-</button>
+
+</div>
+
 <input
   type="text"
   placeholder="🔎 Αναζήτηση πελάτη"
@@ -418,7 +390,11 @@ const filteredClients = clients
     <tbody>
 
       {filteredClients.map(client => (
-        <tr key={client.id} className="border-t">
+        <tr 
+        key={client.id} 
+        className={`border-t ${
+        client.payment_status === 'paid'? "bg-green-50": "bg-red-50"}`}
+        >
 
           <td className="p-3 font-semibold">
             {client.name}
@@ -448,7 +424,7 @@ const filteredClients = clients
 
             <button
               onClick={() => togglePayment(client)}
-              className="text-blue-600 text-sm"
+              className="bg-blue-500 text-white px-2 py-1 rounded"
             >
               Πληρωμή
             </button>
@@ -470,7 +446,7 @@ const filteredClients = clients
 
             <button
               onClick={() => deleteClient(client.id)}
-              className="text-red-600 text-sm"
+              className="bg-red-500 text-white px-2 py-1 rounded"
             >
               Διαγραφή
             </button>
