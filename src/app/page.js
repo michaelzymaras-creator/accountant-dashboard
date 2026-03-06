@@ -365,29 +365,7 @@ const filteredClients = clients
   />
 </div>
         {/* Add Client Card */}
-        <div className="bg-white p-6 rounded-2xl shadow mb-8">
-
-        <h2 className="font-semibold mb-4">Έσοδα Μήνα</h2>
-
-          <BarChart width={500} height={250} data={chartData}>
-         <XAxis dataKey="name" />
-         <YAxis />
-         <Tooltip />
-         <Bar dataKey="value" />
-         </BarChart>
-
-         <h2 className="font-semibold mb-4 mt-6">Έσοδα Μήνα</h2>
-
-<BarChart width={500} height={250} data={[
-  { name: "Έσοδα", amount: Number(totalIncome) }
-]}>
-  <XAxis dataKey="name" />
-  <YAxis />
-  <Tooltip />
-  <Bar dataKey="amount" />
-</BarChart>
-
-</div>
+        
         <div className="bg-white p-6 rounded-2xl shadow mb-8">
           <h2 className="font-semibold mb-4">Προσθήκη Πελάτη</h2>
 
@@ -563,6 +541,29 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
 
     </tbody>
   </table>
+</div>
+<div className="bg-white p-6 rounded-2xl shadow mb-8">
+
+        <h2 className="font-semibold mb-4">Έσοδα Μήνα</h2>
+
+          <BarChart width={500} height={250} data={chartData}>
+         <XAxis dataKey="name" />
+         <YAxis />
+         <Tooltip />
+         <Bar dataKey="value" />
+         </BarChart>
+
+         <h2 className="font-semibold mb-4 mt-6">Έσοδα Μήνα</h2>
+
+<BarChart width={500} height={250} data={[
+  { name: "Έσοδα", amount: Number(totalIncome) }
+]}>
+  <XAxis dataKey="name" />
+  <YAxis />
+  <Tooltip />
+  <Bar dataKey="amount" />
+</BarChart>
+
 </div>
       </div>
       {editingClient && (
