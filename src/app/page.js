@@ -1,3 +1,5 @@
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase.js'
@@ -131,7 +133,28 @@ const fetchClients = async (userId) => {
     await supabase.from('clients').delete().eq('id', id)
     fetchClients(user.id)
   }
+  const exportPDF = () => {
 
+  const doc = new jsPDF()
+
+  doc.text(`Πελάτες Μήνα: ${selectedMonth}`, 14, 15)
+
+  const tableData = clients.map(c => [
+    c.name,
+    c.afm,
+    `${c.monthly_fee} €`,
+    c.payment_status === 'paid' ? "Πληρώθηκε" : "Απλήρωτος",
+    c.vat_enabled ? (c.vat_submitted ? "Υποβλήθηκε" : "Εκκρεμεί") : "-"
+  ])
+
+  autoTable(doc, {
+    head: [["Πελάτης", "ΑΦΜ", "Αμοιβή", "Πληρωμή", "ΦΠΑ"]],
+    body: tableData,
+    startY: 20
+  })
+
+  doc.save(`clients-${selectedMonth}.pdf`)
+}
 const filteredClients = clients
   .filter(c => !showUnpaid || c.payment_status === 'pending')
   .filter(c =>
@@ -165,6 +188,35 @@ const filteredClients = clients
 
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Πελάτες</h1>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 mb-6">
+
+<div className="bg-white p-4 rounded-xl shadow">
+<div className="text-sm text-gray-500">Πελάτες</div>
+<div className="text-2xl font-bold">{clients.length}</div>
+</div>
+
+<div className="bg-white p-4 rounded-xl shadow">
+<div className="text-sm text-gray-500">Έσοδα μήνα</div>
+<div className="text-2xl font-bold text-green-600">
+{totalIncome} €
+</div>
+</div>
+
+<div className="bg-white p-4 rounded-xl shadow">
+<div className="text-sm text-gray-500">Απλήρωτοι</div>
+<div className="text-2xl font-bold text-red-500">
+{clients.filter(c => c.payment_status === 'pending').length}
+</div>
+</div>
+
+<div className="bg-white p-4 rounded-xl shadow">
+<div className="text-sm text-gray-500">ΦΠΑ εκκρεμεί</div>
+<div className="text-2xl font-bold text-orange-500">
+{clients.filter(c => c.vat_enabled && !c.vat_submitted).length}
+</div>
+</div>
+
+</div>
           <div className="text-xl font-semibold text-green-600">
             Σύνολο Εισπραγμένων: {totalIncome} €
           </div>
@@ -238,6 +290,12 @@ const filteredClients = clients
   onClick={createNewMonth}
   className="mb-4 bg-green-600 text-white px-4 py-2 rounded-xl"
 >
+  <button
+  onClick={exportPDF}
+  className="mb-4 ml-4 bg-blue-600 text-white px-4 py-2 rounded-xl"
+>
+  📄 Export PDF
+</button>
   📅 Δημιουργία Μήνα
 </button>
 <input
