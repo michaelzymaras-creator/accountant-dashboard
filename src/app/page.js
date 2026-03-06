@@ -123,23 +123,6 @@ const fetchClients = async (userId) => {
 
   fetchClients(user.id)
 }
-
-  const newClients = clients.map(c => ({
-    user_id: user.id,
-    name: c.name,
-    afm: c.afm,
-    monthly_fee: c.monthly_fee,
-    payment_status: 'pending',
-    vat_enabled: c.vat_enabled,
-    vat_submitted: false,
-    notes: c.notes,
-    month: selectedMonth
-  }))
-
-  await supabase.from('clients').insert(newClients)
-
-  fetchClients(user.id)
-}
   const togglePayment = async (client) => {
     await supabase
       .from('clients')
