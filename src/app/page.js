@@ -18,8 +18,12 @@ const [selectedMonth, setSelectedMonth] = useState(
 )
  useEffect(() => {
   checkUser()
+}, [])
+  useEffect(() => {
+  if (user) {
+    fetchClients(user.id)
+  }
 }, [selectedMonth])
-
   const checkUser = async () => {
     const { data } = await supabase.auth.getUser()
     if (data.user) {
