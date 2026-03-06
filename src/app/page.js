@@ -1,4 +1,5 @@
 'use client'
+import * as XLSX from 'xlsx'
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { useState, useEffect } from 'react'
@@ -18,6 +19,23 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0,7))
   const viewHistory = async (client) => {
+  const exportExcel = () => {
+
+const data = clients.map(c => ({
+Πελάτης: c.name,
+ΑΦΜ: c.afm,
+Αμοιβή: c.monthly_fee,
+Πληρωμή: c.payment_status,
+ΦΠΑ: c.vat_submitted ? "ΝΑΙ" : "ΟΧΙ"
+}))
+
+const ws = XLSX.utils.json_to_sheet(data)
+const wb = XLSX.utils.book_new()
+
+XLSX.utils.book_append_sheet(wb, ws, "Clients")
+
+XLSX.writeFile(wb, `clients-${selectedMonth}.xlsx`)
+}  
 
   const { data } = await supabase
     .from('payments')
@@ -374,8 +392,15 @@ className="bg-blue-600 text-white px-4 py-2 rounded-xl"
 </button>
 
 <button
+onClick={exportExcel}
+className="bg-black text-white px-4 py-2 rounded-xl mb-4"
+>
+📥 Export Excel
+</button>
+
+<button
   onClick={() => viewHistory(client)}
-  className="text-gray-600 text-sm"
+  className="bg-yellow-600 text-white px-4 py-2 rounded-xl"
 >
   Ιστορικό
 </button>
@@ -396,8 +421,8 @@ className="bg-blue-600 text-white px-4 py-2 rounded-xl"
           {showUnpaid ? "Δείξε Όλους" : "Μόνο Απλήρωτοι"}
         </button>
 
-        <div className="bg-white rounded-2xl shadow overflow-hidden">
-  <table className="w-full">
+        <div className="overflow-x-auto">
+<table className="w-full min-w-[700px]">
 
     <thead className="bg-gray-100">
       <tr>
