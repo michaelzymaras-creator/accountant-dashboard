@@ -322,35 +322,7 @@ const filteredClients = clients
             Σύνολο Εισπραγμένων: {totalIncome} €
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-
-<div className="bg-white p-4 rounded-xl shadow">
-<div className="text-sm text-gray-500">Πελάτες</div>
-<div className="text-2xl font-bold">{clients.length}</div>
-</div>
-
-<div className="bg-white p-4 rounded-xl shadow">
-<div className="text-sm text-gray-500">Έσοδα μήνα</div>
-<div className="text-2xl font-bold text-green-600">
-{totalIncome} €
-</div>
-</div>
-
-<div className="bg-white p-4 rounded-xl shadow">
-<div className="text-sm text-gray-500">Απλήρωτοι</div>
-<div className="text-2xl font-bold text-red-500">
-{clients.filter(c => c.payment_status === 'pending').length}
-</div>
-</div>
-
-<div className="bg-white p-4 rounded-xl shadow">
-<div className="text-sm text-gray-500">ΦΠΑ εκκρεμεί</div>
-<div className="text-2xl font-bold text-orange-500">
-{clients.filter(c => c.vat_enabled && !c.vat_submitted).length}
-</div>
-</div>
-
-</div>
+       
 
 <div className="mb-6">
   <label className="block text-sm font-semibold mb-1">
