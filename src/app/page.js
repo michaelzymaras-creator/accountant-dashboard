@@ -367,16 +367,7 @@ const filteredClients = clients
 
           <div className="mt-4">
             <label className="flex items-center gap-2">
-              {vatEnabled && (
-              <select
-              className="border p-2 rounded-lg mt-2"
-              value={vatType}
-              onChange={(e)=>setVatType(e.target.value)}
-              >
-              <option value="monthly">Μηνιαίο ΦΠΑ</option>
-              <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
-              </select>
-          )}
+              {vatEnabled && ()}
               <input
                 type="checkbox"
                 checked={vatEnabled}
@@ -590,7 +581,16 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
           setEditingClient({ ...editingClient, monthly_fee: e.target.value })
         }
       />
-
+        <select
+className="border p-2 rounded-lg w-full mb-3"
+value={editingClient.vat_type || "monthly"}
+onChange={(e)=>
+setEditingClient({...editingClient, vat_type:e.target.value})
+}
+>
+<option value="monthly">Μηνιαίο ΦΠΑ</option>
+<option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+</select>
       <textarea
         className="border p-2 rounded-lg w-full mb-3"
         value={editingClient.notes || ''}
