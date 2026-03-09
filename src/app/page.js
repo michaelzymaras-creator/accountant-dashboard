@@ -13,6 +13,22 @@ export default function Home() {
 
 
   const [clients, setClients] = useState([])
+  const getVatStatus = (client) => {
+const today = new Date()
+const month = today.getMonth() + 1
+
+if(client.vat_type === "monthly"){
+return "due"
+}
+
+if(client.vat_type === "quarterly"){
+if([3,6,9,12].includes(month)){
+return "due"
+}
+}
+
+return "ok"
+}
   const totalClients = clients.length
     const unpaidClients = clients.filter(
       c => c.payment_status === 'pending'
@@ -464,44 +480,26 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
         client.payment_status === 'paid'? "bg-green-50": "bg-red-50"}`}
         >
 
-          <td className="p-3 font-semibold">
-            {client.name}
-          </td>
+          <td className="p-3 font-semibold"> {client.name} </td>
 
-          <td className="p-3">
-            {client.afm}
-          </td>
+          <td className="p-3"> {client.afm} </td>
 
-          <td className="p-3">
-            {client.monthly_fee} €
-          </td>
+          <td className="p-3"> {client.monthly_fee} € </td>
 
-          <td className="p-3">
-            {client.payment_status === 'paid'
-              ? '✅'
-              : '❌'}
-          </td>
+          <td className="p-3"> {client.payment_status === 'paid' ? '✅'  : '❌'} </td>
 
-          <td className="p-3">
-            {client.vat_enabled
-              ? (client.vat_submitted ? '📤' : '⚠')
-              : '-'}
-          </td>
+          <td className="p-3"> {client.vat_enabled ? (client.vat_submitted ? '📤' : '⚠') : '-'} </td>
 
-          <td className="p-3 space-x-3">
-
+          <td className="p-3 space-x-3"> 
             <button
               onClick={() => togglePayment(client)}
-              className="bg-blue-500 text-white px-2 py-1 rounded"
-            >
+              className="bg-blue-500 text-white px-2 py-1 rounded" >
               Πληρωμή
-            </button>
-
+            </button> 
             {client.vat_enabled && (
               <button
                 onClick={() => toggleVatSubmitted(client)}
-                className="text-purple-600 text-sm"
-              >
+                className="text-purple-600 text-sm" >
                 ΦΠΑ
               </button>
             )}
