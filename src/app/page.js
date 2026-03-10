@@ -465,93 +465,106 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
         </button>
 
         <div className="overflow-x-auto">
+          
+          <table className="w-full min-w-[700px]">
+            
+            <thead className="bg-gray-100">
+              
+              <tr>
+                
+                <th className="p-3 text-left">Πελάτης</th>
+                <th className="p-3 text-left">ΑΦΜ</th>
+                <th className="p-3 text-left">Αμοιβή</th>
+                <th className="p-3 text-left">Πληρωμή</th>
+                <th className="p-3 text-left">ΦΠΑ</th>
+                <th className="p-3 text-left">Ενέργειες</th>
+                
+                </tr>
+                
+                </thead>
+                
+                <tbody>
+                  
+                  {filteredClients.map(client => (
+                    
+                    <tr
+                      key={client.id}
+                      className={`border-t ${ client.payment_status === 'paid'? "bg-green-50": "bg-red-50"}`} 
+                      > 
+                        <td className="p-3 font-semibold"> {client.name} </td>
+                        <td className="p-3"> {client.afm} </td>
+                        <td className="p-3"> {client.monthly_fee} € </td>
+                        <td className="p-3"> {client.payment_status === 'paid' ? '✅' : '❌'} </td>
+                        <td className="p-2 border"> 
+                          {client.vat_enabled ? 
+                          (
+                            <>
+                            {client.vat_type === "monthly" ? "Μηνιαίο" : "Τριμηνιαίο"}
+                            {client.vat_submitted ? 
+                              (
+                                <span className="text-green-600 ml-2">✅ Υποβλήθηκε</span>
+                              )
+                              :
+                              (
+                                <span className="text-red-500 ml-2">❌ Εκκρεμεί</span>
+                              )
+                            }
+                          
+                            {getVatStatus(client) === "due" && !client.vat_submitted && 
+                              (
+                                <span className="text-red-600 ml-2 font-bold">⚠ Υποβολή</span>
+                              )
+                            }
+                            </>
+                          ) 
+                          :
+                          (
+                            "-"
+                          )
+                          }
+                              
+                        </td>
+                              
+                              <td className="p-3 space-x-3">
+                                
+                                <button
+                                  onClick={() => togglePayment(client)}
+                                  className="bg-blue-500 text-white px-2 py-1 rounded"
+                                  >
+                                  Πληρωμή
+                                </button>
+                                  
+                                {client.vat_enabled && (
+                                  
+                                  <button
+                                    onClick={() => toggleVatSubmitted(client)}
+                                    className={`px-2 py-1 rounded text-white text-sm ${
+                                      client.vat_submitted ? "bg-green-500" : "bg-orange-500"
+                                    }`}
+                                    >
+                                      ΦΠΑ
+                                  </button>
+                                )}
 
-<table className="w-full min-w-[700px]">
-
-    <thead className="bg-gray-100">
-      <tr>
-        <th className="p-3 text-left">Πελάτης</th>
-        <th className="p-3 text-left">ΑΦΜ</th>
-        <th className="p-3 text-left">Αμοιβή</th>
-        <th className="p-3 text-left">Πληρωμή</th>
-        <th className="p-3 text-left">ΦΠΑ</th>
-        <th className="p-3 text-left">Ενέργειες</th>
-      </tr>
-    </thead>
-
-    <tbody>
-
-      {filteredClients.map(client => (
-        <tr 
-        key={client.id} 
-        className={`border-t ${
-        client.payment_status === 'paid'? "bg-green-50": "bg-red-50"}`}
-        >
-
-          <td className="p-3 font-semibold"> {client.name} </td>
-          <td className="p-3"> {client.afm} </td>
-          <td className="p-3"> {client.monthly_fee} € </td>
-          <td className="p-3"> {client.payment_status === 'paid'
-              ? '✅'
-              : '❌'}
-          </td>
-
-          <td className="p-2 border"> {client.vat_enabled ? (
-            <>
-            {client.vat_type === "monthly" ? "Μηνιαίο" : "Τριμηνιαίο"}
-            {client.vat_submitted ? (
-              <span className="text-green-600 ml-2">✅ Υποβλήθηκε</span>
-            ) : (
-            <span className="text-red-500 ml-2">❌ Εκκρεμεί</span>
-            )}
-            {getVatStatus(client) === "due" && !client.vat_submitted && (
-              <span className="text-red-600 ml-2 font-bold">⚠ Υποβολή</span>
-              )}
-              </>
-              ) : (
-                "-"
-                )}
-                </td>
-
-          <td className="p-3 space-x-3">
-
-            <button
-              onClick={() => togglePayment(client)}
-              className="bg-blue-500 text-white px-2 py-1 rounded"
-            >
-              Πληρωμή
-            </button>
-
-            {client.vat_enabled && (
-              <button
-                onClick={() => toggleVatSubmitted(client)}
-                className={`px-2 py-1 rounded text-white text-sm ${
-                  client.vat_submitted ? "bg-green-500" : "bg-orange-500"
-                }`}
-              >
-                ΦΠΑ
-              </button>
-            )}
-            <button
-              onClick={() => setEditingClient(client)}
-              className="text-green-600 text-sm"
-            >
-              Edit
-            </button>
-
-            <button
-              onClick={() => deleteClient(client.id)}
-              className="bg-red-500 text-white px-2 py-1 rounded"
-            >
-              Διαγραφή
-            </button>
-
-          </td>
-
-        </tr>
-      ))}
-
-    </tbody>
+                                <button
+                                  onClick={() => setEditingClient(client)}
+                                  className="text-green-600 text-sm"
+                                    >
+                                  Edit
+                                </button>                                
+                                  <button
+                                    onClick={() => deleteClient(client.id)}
+                                    className="bg-red-500 text-white px-2 py-1 rounded"
+                                    >
+                                    Διαγραφή
+                                    </button>
+                                    </td>
+                     </tr>
+                    )
+                    )
+                  }
+                                      
+                </tbody>
   </table>
 </div>
 <div className="bg-white p-6 rounded-2xl shadow mb-8">
