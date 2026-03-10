@@ -164,10 +164,11 @@ const fetchClients = async (userId) => {
     payment_status: 'pending',
     vat_enabled: c.vat_enabled,
     vat_submitted: false,
+    vat_type: c.vat_type,
     notes: c.notes,
     month: selectedMonth
   }))
-
+  
   await supabase.from('clients').insert(newClients)
 
   fetchClients(user.id)
@@ -524,7 +525,9 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
             {client.vat_enabled && (
               <button
                 onClick={() => toggleVatSubmitted(client)}
-                className="text-purple-600 text-sm"
+                className={`px-2 py-1 rounded text-white text-sm ${
+                  client.vat_submitted ? "bg-green-500" : "bg-orange-500"
+                }`}
               >
                 ΦΠΑ
               </button>
