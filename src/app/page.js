@@ -13,22 +13,6 @@ export default function Home() {
 
 
   const [clients, setClients] = useState([])
-  const getVatStatus = (client) => {
-const today = new Date()
-const month = today.getMonth() + 1
-
-if(client.vat_type === "monthly"){
-return "due"
-}
-
-if(client.vat_type === "quarterly"){
-if([3,6,9,12].includes(month)){
-return "due"
-}
-}
-
-return "ok"
-}
   const totalClients = clients.length
     const unpaidClients = clients.filter(
       c => c.payment_status === 'pending'
@@ -257,8 +241,7 @@ const fetchClients = async (userId) => {
     c.vat_enabled ? (c.vat_submitted ? "Υποβλήθηκε" : "Εκκρεμεί") : "-"
   ])
 
-  autoTable(doc, {
-    head: [["Πελάτης", "ΑΦΜ", "Αμοιβή", "Πληρωμή", "ΦΠΑ"]],
+  autoTable(doc, { head: [["Πελάτης", "ΑΦΜ", "Αμοιβή", "Πληρωμή", "ΦΠΑ"]], 
     body: tableData,
     startY: 20
   })
@@ -401,7 +384,16 @@ const filteredClients = clients
               Έχει ΦΠΑ
             </label>
           </div>
-      
+          <select
+          className="border p-2 rounded-lg w-full mb-3"
+          value={editingClient?.vat_type || "monthly"}
+          onChange={(e)=>
+          setEditingClient({...editingClient, vat_type:e.target.value})
+        }
+          >
+          <option value="monthly">Μηνιαίο ΦΠΑ</option>
+          <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+          </select>
           <textarea
             className="border p-2 rounded-lg w-full mt-4"
             placeholder="Παρατηρήσεις"
@@ -481,25 +473,37 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
         >
 
           <td className="p-3 font-semibold"> {client.name} </td>
-
           <td className="p-3"> {client.afm} </td>
-
           <td className="p-3"> {client.monthly_fee} € </td>
+          <td className="p-3"> {client.payment_status === 'paid'
+              ? '✅'
+              : '❌'}
+          </td>
 
-          <td className="p-3"> {client.payment_status === 'paid' ? '✅'  : '❌'} </td>
+          <td className="p-2 border">
 
-          <td className="p-3"> {client.vat_enabled ? (client.vat_submitted ? '📤' : '⚠') : '-'} </td>
+{client.vat_type === "monthly" ? "Μηνιαίο" : "Τριμηνιαίο"}
 
-          <td className="p-3 space-x-3"> 
+{getVatStatus(client) === "due" && (
+<span className="text-red-500 ml-2">⚠ ΦΠΑ</span>
+)}
+
+</td>
+
+          <td className="p-3 space-x-3">
+
             <button
               onClick={() => togglePayment(client)}
-              className="bg-blue-500 text-white px-2 py-1 rounded" >
+              className="bg-blue-500 text-white px-2 py-1 rounded"
+            >
               Πληρωμή
-            </button> 
+            </button>
+
             {client.vat_enabled && (
               <button
                 onClick={() => toggleVatSubmitted(client)}
-                className="text-purple-600 text-sm" >
+                className="text-purple-600 text-sm"
+              >
                 ΦΠΑ
               </button>
             )}
@@ -579,16 +583,7 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
           setEditingClient({ ...editingClient, monthly_fee: e.target.value })
         }
       />
-        <select
-className="border p-2 rounded-lg w-full mb-3"
-value={editingClient.vat_type || "monthly"}
-onChange={(e)=>
-setEditingClient({...editingClient, vat_type:e.target.value})
-}
->
-<option value="monthly">Μηνιαίο ΦΠΑ</option>
-<option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
-</select>
+
       <textarea
         className="border p-2 rounded-lg w-full mb-3"
         value={editingClient.notes || ''}
