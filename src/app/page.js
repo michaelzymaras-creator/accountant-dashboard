@@ -292,7 +292,7 @@ const vatDueClients = clients.filter(c => getVatStatus(c) === "due")
         <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
           <h2 className="text-2xl font-bold mb-4">Λογιστικό Dashboard</h2>
           <button
-            onClick={signIn}
+          onClick={signIn}
             className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
           >
             Σύνδεση
@@ -451,6 +451,11 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
   onChange={(e) => setSearch(e.target.value)}
   className="border p-2 rounded-lg mb-4 w-full"
 />
+        {vatDueClients.length > 0 && (
+          <div className="bg-red-100 border border-red-400 text-red-700 p-3 rounded-lg mb-4">
+            ⚠ {vatDueClients.length} πελάτες έχουν υποβολή ΦΠΑ
+            </div>
+          )}
         <button
           onClick={() => setShowUnpaid(!showUnpaid)}
           className="mb-6 bg-gray-800 text-white px-4 py-2 rounded-xl"
