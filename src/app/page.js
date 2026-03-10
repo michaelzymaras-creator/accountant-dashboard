@@ -13,6 +13,7 @@ export default function Home() {
 
 
   const [clients, setClients] = useState([])
+
   const totalClients = clients.length
     const unpaidClients = clients.filter(
       c => c.payment_status === 'pending'
@@ -268,6 +269,23 @@ const filteredClients = clients
     value: clients.filter(c => c.payment_status === 'pending').length
   }
 ]
+const getVatStatus = (client) => {
+  const month = new Date().getMonth() + 1
+
+  if (client.vat_type === "monthly") {
+    return "due"
+  }
+
+  if (client.vat_type === "quarterly") {
+    if ([3,6,9,12].includes(month)) {
+      return "due"
+    }
+  }
+
+  return "ok"
+}
+
+const vatDueClients = clients.filter(c => getVatStatus(c) === "due")
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -441,6 +459,7 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
         </button>
 
         <div className="overflow-x-auto">
+
 <table className="w-full min-w-[700px]">
 
     <thead className="bg-gray-100">
@@ -471,11 +490,11 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
               : '❌'}
           </td>
 
-          <td className="p-3">
-            {client.vat_enabled
-              ? (client.vat_submitted ? '📤' : '⚠')
-              : '-'}
-          </td>
+          <td className="p-2 border"> {client.vat_type === "monthly" ? "Μηνιαίο" : "Τριμηνιαίο"} 
+            {getVatStatus(client) === "due" && (
+              <span className="text-red-500 ml-2">⚠ ΦΠΑ</span>
+              )}
+              </td>
 
           <td className="p-3 space-x-3">
 
