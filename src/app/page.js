@@ -31,11 +31,9 @@ export default function Home() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0,7))
-  const vatDueClients = clients.filter(c => getVatStatus(c) === "due")
-
   const exportExcel = () => {
 
-    const data = clients.map(c => ({
+  const data = clients.map(c => ({
         Πελάτης: c.name,
         ΑΦΜ: c.afm,
         Αμοιβή: c.monthly_fee,
@@ -43,14 +41,14 @@ export default function Home() {
         ΦΠΑ: c.vat_submitted ? "ΝΑΙ" : "ΟΧΙ"
         })
       )
-      const ws = XLSX.utils.json_to_sheet(data)
-    const wb = XLSX.utils.book_new()
+
+  const ws = XLSX.utils.json_to_sheet(data)
+  const wb = XLSX.utils.book_new()
 
         XLSX.utils.book_append_sheet(wb, ws, "Clients")
 
         XLSX.writeFile(wb, `clients-${selectedMonth}.xlsx`)
-    }
-
+}  
   const viewHistory = async (client) => {
   const { data } = await supabase
     .from('payments')
@@ -482,15 +480,11 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
               : '❌'}
           </td>
 
-          <td className="p-2 border">
-
-{client.vat_type === "monthly" ? "Μηνιαίο" : "Τριμηνιαίο"}
-
-{getVatStatus(client) === "due" && (
-<span className="text-red-500 ml-2">⚠ ΦΠΑ</span>
-)}
-
-</td>
+          <td className="p-3">
+            {client.vat_enabled
+              ? (client.vat_submitted ? '📤' : '⚠')
+              : '-'}
+          </td>
 
           <td className="p-3 space-x-3">
 
