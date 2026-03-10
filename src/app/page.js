@@ -495,11 +495,22 @@ className="bg-black text-white px-4 py-2 rounded-xl mb-4"
               : '❌'}
           </td>
 
-          <td className="p-2 border"> {client.vat_type === "monthly" ? "Μηνιαίο" : "Τριμηνιαίο"} 
-            {getVatStatus(client) === "due" && (
-              <span className="text-red-500 ml-2">⚠ ΦΠΑ</span>
+          <td className="p-2 border"> {client.vat_enabled ? (
+            <>
+            {client.vat_type === "monthly" ? "Μηνιαίο" : "Τριμηνιαίο"}
+            {client.vat_submitted ? (
+              <span className="text-green-600 ml-2">✅ Υποβλήθηκε</span>
+            ) : (
+            <span className="text-red-500 ml-2">❌ Εκκρεμεί</span>
+            )}
+            {getVatStatus(client) === "due" && !client.vat_submitted && (
+              <span className="text-red-600 ml-2 font-bold">⚠ Υποβολή</span>
               )}
-              </td>
+              </>
+              ) : (
+                "-"
+                )}
+                </td>
 
           <td className="p-3 space-x-3">
 
