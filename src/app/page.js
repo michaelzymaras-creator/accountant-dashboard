@@ -109,6 +109,7 @@ function Home() {
     setFee('')
     setVatEnabled(false)
     setNotes('')
+    setVatType('monthly')
     setLoading(false)
   }
   const createNewMonth = async () => {
@@ -267,12 +268,6 @@ function Home() {
     return "ok"
   }
   
-  const vatPending = clients.filter(
-    c => c.vat_enabled &&
-    getVatStatus(c) !== "ok" && 
-    !c.vat_submitted
-  ).length
-  
   const vatDueClients = clients.filter(c => getVatStatus(c) === "due")
   if (!user) {
     return (
@@ -304,7 +299,7 @@ function Home() {
           <div className="bg-white p-4 rounded-xl shadow">
             <div className="text-gray-500 text-sm">ΦΠΑ εκκρεμεί</div>
             <div className="text-2xl font-bold text-orange-500">
-              {vatPending}
+              {vatDueClients.length}
             </div>
           </div>
           <div className="bg-white p-4 rounded-xl shadow">
