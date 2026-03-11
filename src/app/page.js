@@ -253,6 +253,7 @@ function Home() {
       value: clients.filter(c => c.payment_status === 'pending').length
     }
   ]
+  
   const getVatStatus = (client) => {
     const month = new Date().getMonth() + 1
     if (client.vat_type === "monthly") {
@@ -266,25 +267,24 @@ function Home() {
     return "ok"
   }
   
-  const vatPending = clients.filter(
-    c => c.vat_enabled &&
-    getVatStatus(c) !== "ok" && 
-    !c.vat_submitted
-  ).length
-  
-  const vatDueClients = clients.filter(c => getVatStatus(c) === "due")
-  if (!user) {
-    return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
-        <h2 className="text-2xl font-bold mb-4">Λογιστικό Dashboard</h2>
-        <button onClick={signIn} className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700" >
-          Σύνδεση
-        </button>
-      </div>
-    </div>
-          )
+  const vatDueClients = clients.filter(client => {
+
+  if (!client.vat_enabled) return false
+
+  if (client.vat_submitted) return false
+
+  const month = new Date().getMonth() + 1
+
+  if (client.vat_type === "monthly") {
+    return true
   }
+
+  if (client.vat_type === "quarterly") {
+    return [3,6,9,12].includes(month)
+  }
+
+  return false
+})
   return (
   <div className="min-h-screen bg-gray-100 p-8">
     <div className="max-w-6xl mx-auto">
