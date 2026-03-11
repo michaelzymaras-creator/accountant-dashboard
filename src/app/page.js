@@ -385,9 +385,10 @@ export default function Home() {
                     <td className="p-3 space-x-3">
                       <button onClick={() => togglePayment(client)} className="bg-blue-500 text-white px-2 py-1 rounded" > Πληρωμή </button>
                       {client.vat_enabled && (
-                        <button onClick={() => toggleVatSubmitted(client)} className={`px-2 py-1 rounded text-white text-sm $ {client.vat_submitted ? "bg-green-500" : "bg-orange-500"}` } > ΦΠΑ </button> ) } 
-                        <button onClick={() => setEditingClient(client)} className="text-green-600 text-sm" > Edit </button> 
-                        <button onClick={() => deleteClient(client.id)} className="bg-red-500 text-white px-2 py-1 rounded"> Διαγραφή </button> 
+                        <button onClick={() => toggleVatSubmitted(client)} className={`px-2 py-1 rounded text-white text-sm $ {client.vat_submitted ? "bg-green-500" : "bg-orange-500"}` } > ΦΠΑ </button> 
+                      )}
+                      <button onClick={() => setEditingClient(client)} className="text-green-600 text-sm" > Edit </button>
+                      <button onClick={() => deleteClient(client.id)} className="bg-red-500 text-white px-2 py-1 rounded"> Διαγραφή </button>
                     </td>
                   </tr>
                   ))
