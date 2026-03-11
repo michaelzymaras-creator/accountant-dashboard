@@ -12,8 +12,8 @@ export default function Home() {
   const totalClients = clients.length
   const unpaidClients = clients.filter(c => c.payment_status === 'pending').length
   const vatPending = clients.filter(
-    c => c.vat_enabled && 
-    getVatStatus(c) !== "ok" &&
+    c => c.vat_enabled &&
+    getVatStatus(c) !== "ok" && 
     !c.vat_submitted
   ).length
   const [name, setName] = useState('')
