@@ -314,7 +314,7 @@ const vatDueClients = clients.filter(
           </div>
           <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
             <div className="text-gray-500 text-sm">ΦΠΑ εκκρεμεί</div>
-            <div className="text-2xl font-bold text-orange-500">
+            <div className="text-2xl font-bold text-red-500">
               {vatDueClients.length}
             </div>
           </div>
