@@ -255,20 +255,26 @@ function Home() {
     }
   ]
   
-  const getVatStatus = (client) => {
-    const month = new Date().getMonth() + 1
-    if (client.vat_type === "monthly") {
+const getVatStatus = (client) => {
+
+  const month = Number(selectedMonth.split("-")[1])
+
+  if (client.vat_type === "monthly") {
+    return "due"
+  }
+
+  if (client.vat_type === "quarterly") {
+    if ([3,6,9,12].includes(month)) {
       return "due"
     }
-    if (client.vat_type === "quarterly") {
-      if ([3,6,9,12].includes(month)) {
-        return "due"
-      }
-    }
-    return "ok"
   }
+
+  return "ok"
+}
+const vatDueClients = clients.filter(
+  c => c.vat_enabled && !c.vat_submitted && getVatStatus(c) === "due"
+)
   
-  const vatDueClients = clients.filter(c => getVatStatus(c) === "due")
   if (!user) {
     return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -431,22 +437,6 @@ function Home() {
             </tbody>
           </table>
         </div>
-          <div className="bg-white p-6 rounded-2xl shadow mb-8">
-            <h2 className="font-semibold mb-4">Έσοδα Μήνα</h2>
-            <BarChart width={500} height={250} data={chartData}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="value" />
-            </BarChart>
-            <h2 className="font-semibold mb-4 mt-6">Έσοδα Μήνα</h2>
-            <BarChart width={500} height={250} data={[ { name: "Έσοδα", amount: Number(totalIncome) } ]}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="amount" />
-            </BarChart>
-          </div>
     </div>
     {editingClient && (
       <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
