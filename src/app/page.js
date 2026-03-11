@@ -5,17 +5,13 @@ import autoTable from "jspdf-autotable"
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
-export default function Home() {
+export default 
+function Home() {
   const [editingClient, setEditingClient] = useState(null)
   const [user, setUser] = useState(null)
   const [clients, setClients] = useState([])
   const totalClients = clients.length
   const unpaidClients = clients.filter(c => c.payment_status === 'pending').length
-  const vatPending = clients.filter(
-    c => c.vat_enabled &&
-    getVatStatus(c) !== "ok" && 
-    !c.vat_submitted
-  ).length
   const [name, setName] = useState('')
   const [afm, setAfm] = useState('')
   const [fee, setFee] = useState('')
@@ -269,6 +265,13 @@ export default function Home() {
     }
     return "ok"
   }
+  
+  const vatPending = clients.filter(
+    c => c.vat_enabled &&
+    getVatStatus(c) !== "ok" && 
+    !c.vat_submitted
+  ).length
+  
   const vatDueClients = clients.filter(c => getVatStatus(c) === "due")
   if (!user) {
     return (
