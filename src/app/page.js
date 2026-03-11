@@ -11,7 +11,7 @@ export default function Home() {
   const [clients, setClients] = useState([])
   const totalClients = clients.length
   const unpaidClients = clients.filter(c => c.payment_status === 'pending').length
-  const vatPending = clients.filter(c => c.vat_enabled && !c.vat_submitted).length
+  const vatPending = clients.filter( c => c.vat_enabled && getVatStatus(c) !== "ok" && !c.vat_submitted ).length
   const [name, setName] = useState('')
   const [afm, setAfm] = useState('')
   const [fee, setFee] = useState('')
@@ -151,19 +151,43 @@ export default function Home() {
       fetchClients(user.id)
   }
   const togglePayment = async (client) => {
-    const newStatus =
-    client.payment_status === 'paid' ? 'pending' : 'paid'
+    
+    const newStatus = client.payment_status === 'paid' ? 'pending' : 'paid'
+    
     await supabase
     .from('clients')
     .update({ payment_status: newStatus })
     .eq('id', client.id)
-    await supabase
+    
+    const { data: existing } = await supabase
     .from('payments')
-    .update({ status: newStatus })
+    .select('*')
     .eq('client_name', client.name)
     .eq('month', selectedMonth)
+    
+    if (existing.length === 0) {
+      
+      await supabase
+      .from('payments')
+      .insert({
+        client_name: client.name,
+        month: selectedMonth,
+        status: newStatus
+      })
+    
+    } else {
+      
+      await supabase
+      .from('payments')
+      .update({ status: newStatus })
+      .eq('client_name', client.name)
+      .eq('month', selectedMonth)
+    }
+
     fetchClients(user.id)
+
   }
+
   const toggleVatSubmitted = async (client) => {
     await supabase
     .from('clients')
@@ -386,7 +410,7 @@ export default function Home() {
                       <button onClick={() => togglePayment(client)} className="bg-blue-500 text-white px-2 py-1 rounded" > Πληρωμή </button>
                       {client.vat_enabled && (
                         <button onClick={() => toggleVatSubmitted(client)} className= 
-                        {`px-2 py-1 rounded text-white text-sm ${client.vat_submitted ? "bg-green-500" : "bg-orange-500"}` } > ΦΠΑ </button> 
+                        {`px-2 py-1 rounded text-white text-sm ${client.vat_submitted ? "ΦΠΑ ✓" : "ΦΠΑ"}` } > ΦΠΑ </button> 
                       )}
                       <button onClick={() => setEditingClient(client)} className="text-green-600 text-sm" > Edit </button>
                       <button onClick={() => deleteClient(client.id)} className="bg-red-500 text-white px-2 py-1 rounded"> Διαγραφή </button>
