@@ -11,7 +11,11 @@ export default function Home() {
   const [clients, setClients] = useState([])
   const totalClients = clients.length
   const unpaidClients = clients.filter(c => c.payment_status === 'pending').length
-  const vatPending = clients.filter( c => c.vat_enabled && getVatStatus(c) !== "ok" && !c.vat_submitted ).length
+  const vatPending = clients.filter(
+    c => c.vat_enabled && 
+    getVatStatus(c) !== "ok" &&
+    !c.vat_submitted
+  ).length
   const [name, setName] = useState('')
   const [afm, setAfm] = useState('')
   const [fee, setFee] = useState('')
