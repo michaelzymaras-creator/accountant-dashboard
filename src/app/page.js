@@ -384,7 +384,11 @@ const vatDueClients = clients.filter(
           value={notes}
           onChange={e => setNotes(e.target.value)}
           />
-          <button onClick={addClient} disabled={loading} className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 disabled:opacity-50" > {loading ? "Προσθήκη..." : "Προσθήκη"} </button>
+          <button onClick={addClient} 
+          disabled={loading} 
+          className="text-white px-4 py-2 rounded-xl"
+          style={{backgroundColor: colors.primary}} > {loading ? "Προσθήκη..." : "Προσθήκη"} 
+          </button>
       </div>
       <div className="flex gap-4 mb-4">
         <button onClick={createNewMonth} className="bg-green-600 text-white px-4 py-2 rounded-xl" > 📅 Δημιουργία Μήνα </button>
@@ -431,7 +435,12 @@ const vatDueClients = clients.filter(
                       {getVatStatus(client) === "due" && !client.vat_submitted && ( <span className="text-red-600 ml-2 font-bold">⚠ Υποβολή</span> ) } </> ) : ( "-") }
                     </td>
                     <td className="p-3 space-x-3">
-                      <button onClick={() => togglePayment(client)} className="bg-blue-500 text-white px-2 py-1 rounded" > Πληρωμή </button>
+                      <button onClick={() => togglePayment(client)} 
+                      className="text-white px-4 py-2 rounded-xl"
+                      style={{backgroundColor: colors.primary}} 
+                      >
+                        Πληρωμή
+                      </button>
                       {client.vat_enabled && (
                         <button
                         onClick={() => toggleVatSubmitted(client)}
