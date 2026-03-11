@@ -112,38 +112,43 @@ export default function Home() {
     setLoading(false)
   }
   const createNewMonth = async () => {
+    const previousMonth = new Date(selectedMonth)
+    previousMonth.setMonth(previousMonth.getMonth() - 1)
+    const prevMonthString = previousMonth.toISOString().slice(0,7)
     const { data: existing } = await supabase
-      .from('clients')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('month', selectedMonth)
-      if (existing.length > 0) {
-        alert("Ο μήνας υπάρχει ήδη!")
-        return
+    .from('clients')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('month', selectedMonth)
+    if (existing.length > 0)
+      { alert("Ο μήνας υπάρχει ήδη!")
+        return 
       }
     const { data: lastMonthClients } = await supabase
-      .from('clients')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      if (!lastMonthClients.length) {
-        alert("Δεν υπάρχουν πελάτες για αντιγραφή")
-        return
-      }
-    const newClients = lastMonthClients.map(c => ({
-      user_id: user.id,
-      name: c.name,
-      afm: c.afm,
-      monthly_fee: c.monthly_fee,
-      payment_status: 'pending',
-      vat_enabled: c.vat_enabled,
-      vat_submitted: false,
-      vat_type: c.vat_type,
-      notes: c.notes,
-      month: selectedMonth
-    }))
-    await supabase.from('clients').insert(newClients)
-    fetchClients(user.id)
+    .from('clients')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('month', prevMonthString)
+    if (!lastMonthClients || lastMonthClients.length === 0) { 
+      alert("Δεν υπάρχουν πελάτες στον προηγούμενο μήνα")
+      return
+    }
+    const newClients = lastMonthClients.map(c =>
+      ({
+        user_id: user.id,
+        name: c.name,
+          afm: c.afm,
+          monthly_fee: c.monthly_fee,
+          payment_status: 'pending',
+          vat_enabled: c.vat_enabled,
+          vat_submitted: false,
+          vat_type: c.vat_type,
+          notes: c.notes,
+          month: selectedMonth
+        })
+      )
+      await supabase.from('clients').insert(newClients)
+      fetchClients(user.id)
   }
   const togglePayment = async (client) => {
     const newStatus =
@@ -408,76 +413,25 @@ export default function Home() {
             </BarChart>
           </div>
     </div>
-      {editingClient && (
-  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-
-    <div className="bg-white p-6 rounded-xl w-96">
-
-      <h2 className="text-xl font-bold mb-4">Επεξεργασία Πελάτη</h2>
-
-      <input
-        className="border p-2 rounded-lg w-full mb-3"
-        value={editingClient.name}
-        onChange={(e) =>
-          setEditingClient({ ...editingClient, name: e.target.value })
-        }
-      />
-
-      <input
-        className="border p-2 rounded-lg w-full mb-3"
-        value={editingClient.afm}
-        onChange={(e) =>
-          setEditingClient({ ...editingClient, afm: e.target.value })
-        }
-      />
-
-      <input
-        className="border p-2 rounded-lg w-full mb-3"
-        value={editingClient.monthly_fee}
-        onChange={(e) =>
-          setEditingClient({ ...editingClient, monthly_fee: e.target.value })
-        }
-      />
-        <select
-        className="border p-2 rounded-lg w-full mb-3"
-        value={editingClient.vat_type || "monthly"}
-        onChange={(e)=>
-        setEditingClient({...editingClient, vat_type:e.target.value})
-        }
-        >
-      <option value="monthly">Μηνιαίο ΦΠΑ</option>
-      <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
-        </select>
-      <textarea
-        className="border p-2 rounded-lg w-full mb-3"
-        value={editingClient.notes || ''}
-        onChange={(e) =>
-          setEditingClient({ ...editingClient, notes: e.target.value })
-        }
-      />
-
-      <div className="flex justify-end gap-3">
-
-        <button
-          onClick={() => setEditingClient(null)}
-          className="px-4 py-2 bg-gray-300 rounded-lg"
-        >
-          Ακύρωση
-        </button>
-
-        <button
-          onClick={updateClient}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-        >
-          Αποθήκευση
-        </button>
-
+    {editingClient && (
+      <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-xl w-96">
+          <h2 className="text-xl font-bold mb-4">Επεξεργασία Πελάτη</h2>
+          <input className="border p-2 rounded-lg w-full mb-3" value={editingClient.name} onChange={(e) => setEditingClient({ ...editingClient, name: e.target.value })} />
+          <input className="border p-2 rounded-lg w-full mb-3" value={editingClient.afm} onChange={(e) => setEditingClient({ ...editingClient, afm: e.target.value })} />
+          <input className="border p-2 rounded-lg w-full mb-3" value={editingClient.monthly_fee} onChange={(e) => setEditingClient({ ...editingClient, monthly_fee: e.target.value })}/>
+          <select className="border p-2 rounded-lg w-full mb-3" value={editingClient.vat_type || "monthly"} onChange={(e)=> setEditingClient({...editingClient, vat_type:e.target.value}) } >
+            <option value="monthly">Μηνιαίο ΦΠΑ</option>
+            <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+            </select>
+            <textarea className="border p-2 rounded-lg w-full mb-3" value={editingClient.notes || ''} onChange={(e) => setEditingClient({ ...editingClient, notes: e.target.value }) } />
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setEditingClient(null)} className="px-4 py-2 bg-gray-300 rounded-lg" > Ακύρωση </button>
+                <button onClick={updateClient} className="px-4 py-2 bg-blue-600 text-white rounded-lg" > Αποθήκευση </button>
+              </div>
+        </div>
       </div>
-
-    </div>
-
+    )}
   </div>
-)}
-    </div>
   )
 }
