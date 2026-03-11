@@ -453,7 +453,7 @@ const vatDueClients = clients.filter(
                         <button
                         onClick={() => toggleVatSubmitted(client)}
                         className={`px-2 py-1 rounded text-white text-sm ${
-                          client.vat_submitted ? "bg-green-500" : "bg-orange-500"
+                          client.vat_submitted ? "bg-green-500" : "bg-red-500"
                         }`}
                         >
                         {client.vat_submitted ? "ΦΠΑ ✓" : "ΦΠΑ"}
