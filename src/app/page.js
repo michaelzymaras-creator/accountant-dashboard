@@ -1,4 +1,11 @@
 'use client'
+const colors = {
+  background: "#F9F7F2", // Pentelic White
+  primary: "#1D63A8", // Aegean Azure
+  gold: "#D4AF37", // Golden Ochre
+  terracotta: "#B35A44", // Terracotta Clay
+  text: "#33302E" // Deep Olive
+}
 import * as XLSX from 'xlsx'
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
