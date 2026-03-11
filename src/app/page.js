@@ -327,9 +327,6 @@ const vatDueClients = clients.filter(
         </div>
         <h1 className="text-3xl font-bold tracking-wide">
           TaxTick </h1>
-        <div className="text-xl font-semibold text-green-600">
-          Σύνολο Εισπραγμένων: {totalIncome} €
-        </div>
       </div>
       <div className="mb-6">
         <label className="block text-sm font-semibold mb-1">
