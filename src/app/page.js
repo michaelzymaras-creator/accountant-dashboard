@@ -419,7 +419,7 @@ const vatDueClients = clients.filter(
       <button onClick={() => setShowUnpaid(!showUnpaid)} className="mb-6 bg-gray-800 text-white px-4 py-2 rounded-xl" > {showUnpaid ? "Δείξε Όλους" : "Μόνο Απλήρωτοι"} </button>
       <div className="overflow-x-auto">
           <table className="w-full min-w-[700px]">
-            <thead className="bg-gray-100">
+            <thead style={{backgroundColor:"#EFE9DC"}}> 
               <tr>
                 <th className="p-3 text-left">Πελάτης</th>
                 <th className="p-3 text-left">ΑΦΜ</th>
