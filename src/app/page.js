@@ -302,23 +302,23 @@ const vatDueClients = clients.filter(
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-4 rounded-xl shadow">
+          <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
             <div className="text-gray-500 text-sm">Πελάτες</div>
             <div className="text-2xl font-bold">{totalClients}</div>
           </div>
-          <div className="bg-white p-4 rounded-xl shadow">
+          <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
             <div className="text-gray-500 text-sm">Απλήρωτοι</div>
             <div className="text-2xl font-bold text-red-600">
               {unpaidClients}
             </div>
           </div>
-          <div className="bg-white p-4 rounded-xl shadow">
+          <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
             <div className="text-gray-500 text-sm">ΦΠΑ εκκρεμεί</div>
             <div className="text-2xl font-bold text-orange-500">
               {vatDueClients.length}
             </div>
           </div>
-          <div className="bg-white p-4 rounded-xl shadow">
+          <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
             <div className="text-gray-500 text-sm">Έσοδα μήνα</div>
             <div className="text-2xl font-bold text-green-600">
               {totalIncome} €
