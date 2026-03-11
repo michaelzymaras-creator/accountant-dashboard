@@ -284,7 +284,7 @@ const vatDueClients = clients.filter(
   
   if (!user) {
     return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen p-8" style={{backgroundColor: colors.background, color: colors.text}}>
       <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
         <h2 className="text-2xl font-bold mb-4">Λογιστικό Dashboard</h2>
         <button onClick={signIn} 
@@ -476,7 +476,12 @@ const vatDueClients = clients.filter(
             <textarea className="border p-2 rounded-lg w-full mb-3" value={editingClient.notes || ''} onChange={(e) => setEditingClient({ ...editingClient, notes: e.target.value }) } />
               <div className="flex justify-end gap-3">
                 <button onClick={() => setEditingClient(null)} className="px-4 py-2 bg-gray-300 rounded-lg" > Ακύρωση </button>
-                <button onClick={updateClient} className="px-4 py-2 bg-blue-600 text-white rounded-lg" > Αποθήκευση </button>
+                <button onClick={updateClient} 
+                className="text-white px-4 py-2 rounded-xl"
+                style={{backgroundColor: colors.primary}} 
+                >
+                  Αποθήκευση
+                </button>
               </div>
         </div>
       </div>
