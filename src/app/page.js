@@ -325,7 +325,7 @@ const vatDueClients = clients.filter(
             </div>
           </div>
         </div>
-        <h1 className="text-10xl font-bold tracking-wide">
+        <h1 className="text-5xl font-bold tracking-wide">
           TaxTick </h1>
           <h2 className="text-2xl font-semibold" style={{color: colors.terracotta}}>
             by Michael Nerouppos 
