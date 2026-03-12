@@ -1,5 +1,11 @@
 'use client'
-import { Cinzel } from '@next/font/google'
+import { Cinzel } from "next/font/google"
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["400","600"]
+})
+
 const colors = {
   background: "#F9F7F2", // Pentelic White
   primary: "#1D63A8", // Aegean Azure
