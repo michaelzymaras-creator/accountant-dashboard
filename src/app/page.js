@@ -440,7 +440,7 @@ const vatDueClients = clients.filter(
                     <td className="p-3"> {client.payment_status === 'paid' ? '✅' : '❌'} </td>
                     <td className="p-2 border"> {client.vat_enabled ? ( <> {client.vat_type === "monthly" ? "Μηνιαίο" : "Τριμηνιαίο"}
                       {client.vat_submitted ? ( <span className="text-green-600 ml-2">✅ Υποβλήθηκε</span> ) : ( <span className="text-red-500 ml-2">❌ Εκκρεμεί</span> ) }
-                      {getVatStatus(client) === "due" && !client.vat_submitted && ( <span className="text-red-600 ml-2 font-bold">⚠ Υποβολή</span> ) } </> ) : ( "-") }
+                      {getVatStatus(client) === "due" && !client.vat_submitted && ( <span className="text-red-600 ml-2 font-bold">⚠ Υποβολή</span> ) } </> ) : ( "Δέν έχει ΦΠΑ") }
                     </td>
                     <td className="p-3 space-x-3">
                       <button onClick={() => togglePayment(client)} 
