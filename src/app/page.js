@@ -312,7 +312,11 @@ function Home() {
     )
   }
   
+  return (
+  <div className="min-h-screen flex"></div> 
+  
   {/* Sidebar */}
+
   <aside className="w-64 bg-white shadow-lg p-6 flex flex-col">
     <h1
     className={`${cinzel.className} text-3xl mb-8`}
@@ -546,6 +550,7 @@ function Home() {
       </table>
     </div>
   </main>
+  ) 
   
   {editingClient && (
       <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
