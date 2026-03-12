@@ -399,17 +399,6 @@ function Home() {
         </div>
       </div>
 
-      <div className="mb-6">
-      <label className="block text-sm font-semibold mb-1">
-        Επιλογή Μήνα
-      </label>
-      <input
-      type="month"
-      value={selectedMonth} 
-      onChange={(e) => setSelectedMonth(e.target.value)}
-      className="border p-2 rounded-lg"
-      />
-      </div>
     
       {/* Add Client Card */}
      <div className="bg-white p-6 rounded-2xl shadow mb-8">
