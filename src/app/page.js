@@ -314,11 +314,12 @@ function Home() {
   
   return (
 
-  <div className="min-h-screen flex"></div> )
+  <div className="min-h-screen flex"> 
   
   {/* Sidebar */}
 
   <aside className="w-64 bg-white shadow-lg p-6 flex flex-col">
+
     <h1
     className={`${cinzel.className} text-3xl mb-8`}
     style={{color: colors.gold}}
@@ -349,60 +350,57 @@ function Home() {
   
   <main className="flex-1 p-8">
 
-    <div className="max-w-6xl mx-auto"></div>
-
-    <div className="flex justify-between items-center mb-8">
-      
-      <div>
-        <h2 className="text-2xl font-bold">
-          Dashboard
-        </h2>
-        <p className="text-gray-500 text-sm">
-          Διαχείριση πελατών και πληρωμών
-        </p>
+    <div className="max-w-6xl mx-auto">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h2 className="text-2xl font-bold">
+            Dashboard
+          </h2>
+          <p className="text-gray-500 text-sm">
+            Διαχείριση πελατών και πληρωμών
+          </p>
+        </div>
+        <input
+        type="month"
+        value={selectedMonth}
+        onChange={(e)=>setSelectedMonth(e.target.value)}
+        className="border p-2 rounded-lg"
+        />
       </div>
       
-      <input
-      type="month"
-      value={selectedMonth}
-      onChange={(e)=>setSelectedMonth(e.target.value)}
-      className="border p-2 rounded-lg"
-      />
-    </div>
-
-    <h2 className="text-lg mb-8" style={{color: colors.text}}>
-      by Michael Nerouppos
-    </h2>
-    
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      <div className="bg-white p-4 rounded-xl shadow">
-        <p className="text-gray-500 text-sm">Σύνολο Πελατών</p>
-        <h3 className="text-2xl font-bold">{totalClients}</h3>
-      </div>
+      <h2 className="text-lg mb-8" style={{color: colors.text}}>
+        by Michael Nerouppos
+      </h2>
       
-      <div className="bg-white p-4 rounded-xl shadow">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white p-4 rounded-xl shadow">
+          <p className="text-gray-500 text-sm">Σύνολο Πελατών</p>
+          <h3 className="text-2xl font-bold">{totalClients}</h3>
+        </div>
+      
+        <div className="bg-white p-4 rounded-xl shadow">
         <p className="text-gray-500 text-sm">Απλήρωτοι</p>
         <h3 className="text-2xl font-bold text-red-500">
           {unpaidClients}
         </h3>
-      </div>
+        </div>
       
-      <div className="bg-white p-4 rounded-xl shadow">
+        <div className="bg-white p-4 rounded-xl shadow">
         <p className="text-gray-500 text-sm">Έσοδα Μήνα</p>
         <h3 className="text-2xl font-bold text-green-600">
           {totalIncome} €
         </h3>
-      </div>
+        </div>
       
-      <div className="bg-white p-4 rounded-xl shadow">
+        <div className="bg-white p-4 rounded-xl shadow">
         <p className="text-gray-500 text-sm">ΦΠΑ προς υποβολή</p>
         <h3 className="text-2xl font-bold text-orange-500">
           {vatDueClients.length}
         </h3>
+        </div>
       </div>
-    </div>
 
-    <div className="mb-6">
+      <div className="mb-6">
       <label className="block text-sm font-semibold mb-1">
         Επιλογή Μήνα
       </label>
@@ -412,10 +410,10 @@ function Home() {
       onChange={(e) => setSelectedMonth(e.target.value)}
       className="border p-2 rounded-lg"
       />
-    </div>
+      </div>
     
-    {/* Add Client Card */}
-    <div className="bg-white p-6 rounded-2xl shadow mb-8">
+      {/* Add Client Card */}
+     <div className="bg-white p-6 rounded-2xl shadow mb-8">
       <h2 className="font-semibold mb-4">Προσθήκη Πελάτη</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <input className="border p-2 rounded-lg"
@@ -464,9 +462,9 @@ function Home() {
       className="text-white px-4 py-2 rounded-xl"
       style={{backgroundColor: colors.primary}} > {loading ? "Προσθήκη..." : "Προσθήκη"} 
       </button>
-    </div>
+      </div>
     
-    <div className="flex gap-4 mb-4">
+      <div className="flex gap-4 mb-4">
       <button onClick={createNewMonth} className="bg-green-600 text-white px-4 py-2 rounded-xl" > 📅 Δημιουργία Μήνα </button>
       <button onClick={exportPDF} 
       className="text-white px-4 py-2 rounded-xl"
@@ -477,17 +475,17 @@ function Home() {
       
       <button onClick={exportExcel} className="bg-black text-white px-4 py-2 rounded-xl mb-4" > 📥 Export Excel </button>
       
-    </div>
+      </div>
     
-    <input
-    type="text"
-    placeholder="🔎 Αναζήτηση πελάτη"
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    className="border p-2 rounded-lg mb-4 w-full"
-    />
+      <input
+      type="text"
+      placeholder="🔎 Αναζήτηση πελάτη"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="border p-2 rounded-lg mb-4 w-full"
+      />
     
-    {vatDueClients.length > 0 && (
+     {vatDueClients.length > 0 && (
       <div style={{
         backgroundColor:"#F5E2DD",
         border:`2px solid ${colors.terracotta}`,
@@ -495,11 +493,11 @@ function Home() {
       }} 
       > ⚠ {vatDueClients.length} πελάτες έχουν υποβολή ΦΠΑ
       </div>
-    )}
+      )}
     
-    <button onClick={() => setShowUnpaid(!showUnpaid)} className="mb-6 bg-gray-800 text-white px-4 py-2 rounded-xl" > {showUnpaid ? "Δείξε Όλους" : "Μόνο Απλήρωτοι"} </button>
+      <button onClick={() => setShowUnpaid(!showUnpaid)} className="mb-6 bg-gray-800 text-white px-4 py-2 rounded-xl" > {showUnpaid ? "Δείξε Όλους" : "Μόνο Απλήρωτοι"} </button>
     
-    <div className="overflow-x-auto">
+     <div className="overflow-x-auto">
       <table className="w-full min-w-[700px]">
         <thead style={{backgroundColor:"#EFE9DC"}}> 
           <tr>
@@ -549,10 +547,12 @@ function Home() {
           ))}
         </tbody>
       </table>
+     </div>
     </div>
   </main>
-  
-  
+  </div>
+  )
+    
   {editingClient && (
       <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
         <div className="bg-white p-6 rounded-xl w-96">
