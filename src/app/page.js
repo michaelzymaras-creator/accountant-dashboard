@@ -18,7 +18,6 @@ import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase.js'
-import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
 export default 
 function Home() {
   const [editingClient, setEditingClient] = useState(null)
@@ -331,8 +330,11 @@ const vatDueClients = clients.filter(
           </div>
         </div>
       </div>
-
-      <h1 className={`${cinzel.className} text-5xl tracking-widest`} >
+      
+      <h1
+      className={`${cinzel.className} text-5xl tracking-widest mb-2`}
+      style={{color: colors.gold}}
+      >
         TaxTick
       </h1>
 
