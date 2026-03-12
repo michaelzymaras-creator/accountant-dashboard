@@ -519,16 +519,6 @@ className="bg-black text-white px-4 py-2 rounded-xl"
       className="border p-2 rounded-lg mb-4 w-full"
       />
     
-     {vatDueClients.length > 0 && (
-      <div style={{
-        backgroundColor:"#F5E2DD",
-        border:`2px solid ${colors.terracotta}`,
-        color:colors.terracotta
-      }} 
-      > ⚠ {vatDueClients.length} πελάτες έχουν υποβολή ΦΠΑ
-      </div>
-      )}
-    
       <button onClick={() => setShowUnpaid(!showUnpaid)} className="mb-6 bg-gray-800 text-white px-4 py-2 rounded-xl" > {showUnpaid ? "Δείξε Όλους" : "Μόνο Απλήρωτοι"} </button>
     
      <div className="overflow-x-auto">
