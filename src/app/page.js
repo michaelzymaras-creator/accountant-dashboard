@@ -332,7 +332,7 @@ TaxTick
 <nav className="flex flex-col gap-2 text-sm">
 
 <button className="p-3 rounded-lg hover:bg-gray-100 text-left">
-📊 Dashboard
+📊 Αρχική Σελίδα
 </button>
 
 <button className="p-3 rounded-lg hover:bg-gray-100 text-left">
@@ -364,7 +364,7 @@ TaxTick
 <div className="flex justify-between items-center mb-10">
 
 <div>
-<h2 className="text-2xl font-bold">Dashboard</h2>
+<h2 className="text-2xl font-bold">Αρχική Σελίδα</h2>
 <p className="text-gray-500 text-sm">
 Διαχείριση πελατών & πληρωμών
 </p>
