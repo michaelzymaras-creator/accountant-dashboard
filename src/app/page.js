@@ -346,6 +346,25 @@ function Home() {
 
     <div className="max-w-6xl mx-auto"></div>
 
+    <div className="flex justify-between items-center mb-8">
+      
+      <div>
+        <h2 className="text-2xl font-bold">
+          Dashboard
+        </h2>
+        <p className="text-gray-500 text-sm">
+          Διαχείριση πελατών και πληρωμών
+        </p>
+      </div>
+      
+      <input
+      type="month"
+      value={selectedMonth}
+      onChange={(e)=>setSelectedMonth(e.target.value)}
+      className="border p-2 rounded-lg"
+      />
+    </div>
+
     <h2 className="text-lg mb-8" style={{color: colors.text}}>
       by Michael Nerouppos
     </h2>
