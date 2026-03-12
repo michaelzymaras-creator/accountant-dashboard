@@ -549,9 +549,9 @@ className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
       + Νέος Πελάτης
     </button>
   </main>
-  </div>
-  )
-    
+
+  {/* EDIT MODAL */}
+  
   {editingClient && (
     <div className="modal">
       <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
@@ -579,75 +579,66 @@ className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
     </div>
   )}
 
-  {showAddClient && (
+{/* ADD CLIENT MODAL */}
 
-<div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-
-<div className="bg-white p-6 rounded-xl w-[500px]">
-
-<h2 className="text-xl font-bold mb-4">
-Προσθήκη Πελάτη
-</h2>
-
-<div className="grid grid-cols-1 gap-3">
-
-<input
-className="border p-2 rounded-lg"
-placeholder="Όνομα"
-value={name}
-onChange={e => setName(e.target.value)}
-/>
-
-<input
-className="border p-2 rounded-lg"
-placeholder="ΑΦΜ"
-value={afm}
-onChange={e => setAfm(e.target.value)}
-/>
-
-<input
-type="number"
-step="0.01"
-className="border p-2 rounded-lg"
-placeholder="Μηνιαία Αμοιβή"
-value={fee}
-onChange={e => setFee(e.target.value)}
-/>
-
-<label className="flex items-center gap-2">
-
-<input
-type="checkbox"
-checked={vatEnabled}
-onChange={e => setVatEnabled(e.target.checked)}
-/>
-
-Έχει ΦΠΑ
-
-</label>
-
-{vatEnabled && (
-
-<select
-className="border p-2 rounded-lg"
-value={vatType}
-onChange={(e)=>setVatType(e.target.value)}
->
-
-<option value="monthly">Μηνιαίο ΦΠΑ</option>
-<option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
-
-</select>
-
-)}
-
-<textarea
-className="border p-2 rounded-lg"
-placeholder="Παρατηρήσεις"
-value={notes}
-onChange={e => setNotes(e.target.value)}
-/>
-
+{showAddClient && (
+  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+    <div className="bg-white p-6 rounded-xl w-[500px]">
+      <h2 className="text-xl font-bold mb-4">
+        Προσθήκη Πελάτη
+      </h2>
+      <div className="grid grid-cols-1 gap-3">
+        
+        <input
+        className="border p-2 rounded-lg"
+        placeholder="Όνομα"
+        value={name}
+        onChange={e => setName(e.target.value)}
+        />
+        
+        <input
+        className="border p-2 rounded-lg"
+        placeholder="ΑΦΜ"
+        value={afm}
+        onChange={e => setAfm(e.target.value)}
+        />
+        
+        <input
+        type="number"
+        step="0.01"
+        className="border p-2 rounded-lg"
+        placeholder="Μηνιαία Αμοιβή"
+        value={fee}
+        onChange={e => setFee(e.target.value)}
+        />
+        
+        <label className="flex items-center gap-2">
+          
+          <input
+          type="checkbox"
+          checked={vatEnabled}
+          onChange={e => setVatEnabled(e.target.checked)}
+          />
+          Έχει ΦΠΑ
+          </label>
+          {vatEnabled && (
+            <select
+            className="border p-2 rounded-lg"
+            value={vatType}
+            onChange={(e)=>setVatType(e.target.value)}
+            >
+              <option value="monthly">Μηνιαίο ΦΠΑ</option>
+              <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+            </select>
+          )}
+          
+          <textarea
+          className="border p-2 rounded-lg"
+          placeholder="Παρατηρήσεις"
+          value={notes}
+          onChange={e => setNotes(e.target.value)}
+          />
+          
 </div>
 
 <div className="flex justify-end gap-3 mt-5">
@@ -677,5 +668,7 @@ style={{backgroundColor: colors.primary}}
 </div>
 
 )}
+  </div>
+  )
 
 }
