@@ -350,9 +350,8 @@ function Home() {
   {/* Main Content */}
   
   <main className="flex-1 p-8">
-    
-    <div className="max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
+
+    <div className="flex justify-between items-center mb-8">
       
       <h2 className="text-2xl font-bold">
         Dashboard
@@ -365,7 +364,9 @@ function Home() {
       className="border p-2 rounded-lg"
       />
     </div>
-      
+    
+    <div className="max-w-6xl mx-auto">
+            
       <h2 className="text-lg mb-8" style={{color: colors.text}}>
         by Michael Nerouppos
       </h2>
