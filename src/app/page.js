@@ -301,7 +301,7 @@ function Home() {
         
         <button
         onClick={signIn}
-        className="text-white px-4 py-2 rounded-xl"
+        className="text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
         style={{backgroundColor: colors.primary}}
         >
           Σύνδεση
@@ -357,7 +357,7 @@ TaxTick
 
 <main className="flex-1 p-8">
 
-<div className="max-w-7xl mx-auto">
+<div className="max-w-7xl mx-auto space-y-8">
 
 
 {/* HEADER */}
@@ -365,7 +365,10 @@ TaxTick
 <div className="flex justify-between items-center mb-10">
 
 <div>
-<h2 className="text-2xl font-bold">Αρχική Σελίδα</h2>
+  <h2 className="text-xl font-semibold text-gray-800">
+    Αρχική Σελίδα
+  </h2>
+
 <p className="text-gray-500 text-sm">
 Διαχείριση πελατών & πληρωμών
 </p>
@@ -438,7 +441,7 @@ color:colors.terracotta
   
   <button
   onClick={()=>setShowAddClient(true)}
-  className="text-white px-4 py-2 rounded-xl"
+  className="text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
   style={{backgroundColor: colors.primary}}
   >
     + Νέος Πελάτης
@@ -446,14 +449,14 @@ color:colors.terracotta
 
 <button
 onClick={createNewMonth}
-className="bg-green-600 text-white px-4 py-2 rounded-xl"
+className="bg-green-600 text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
 >
 📅 Δημιουργία Μήνα
 </button>
 
 <button
 onClick={exportPDF}
-className="text-white px-4 py-2 rounded-xl"
+className="text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
 style={{backgroundColor: colors.primary}}
 >
 📄 PDF
@@ -461,7 +464,7 @@ style={{backgroundColor: colors.primary}}
 
 <button
 onClick={exportExcel}
-className="bg-black text-white px-4 py-2 rounded-xl"
+className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
 >
 📊 Excel
 </button>
@@ -475,11 +478,11 @@ className="bg-black text-white px-4 py-2 rounded-xl"
       className="border p-2 rounded-lg mb-4 w-full"
       />
     
-      <button onClick={() => setShowUnpaid(!showUnpaid)} className="mb-6 bg-gray-800 text-white px-4 py-2 rounded-xl" > {showUnpaid ? "Δείξε Όλους" : "Μόνο Απλήρωτοι"} </button>
+      <button onClick={() => setShowUnpaid(!showUnpaid)} className="mb-6 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-sm hover:shadow" > {showUnpaid ? "Δείξε Όλους" : "Μόνο Απλήρωτοι"} </button>
     
      <div className="overflow-x-auto">
-      <table className="w-full min-w-[700px]">
-        <thead style={{backgroundColor:"#EFE9DC"}}> 
+      <table className="w-full text-sm">
+        <thead className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider"> 
           <tr>
             <th className="p-3 text-left">Πελάτης</th>
             <th className="p-3 text-left">ΑΦΜ</th>
@@ -492,7 +495,7 @@ className="bg-black text-white px-4 py-2 rounded-xl"
         
         <tbody>
           {filteredClients.map(client => (
-            <tr key={client.id} className={`border-t ${ client.payment_status === 'paid'? "bg-green-50": "bg-red-50"}`}  >
+            <tr key={client.id} className={`border-t hover:bg-gray-50 transition ${ client.payment_status === 'paid'? "bg-green-50": "bg-red-50"}`}  >
               <td className="p-3 font-semibold"> {client.name} </td>
               <td className="p-3"> {client.afm} </td>
               <td className="p-3"> {client.monthly_fee} € </td>
@@ -504,7 +507,7 @@ className="bg-black text-white px-4 py-2 rounded-xl"
               <td className="p-3 space-x-3">
                 <button 
                 onClick={() => togglePayment(client)} 
-                className="text-white px-4 py-2 rounded-xl"
+                className="text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
                 style={{backgroundColor: colors.primary}} 
                 >
                   Πληρωμή
@@ -548,7 +551,7 @@ className="bg-black text-white px-4 py-2 rounded-xl"
               <div className="flex justify-end gap-3">
                 <button onClick={() => setEditingClient(null)} className="px-4 py-2 bg-gray-300 rounded-lg" > Ακύρωση </button>
                 <button onClick={updateClient} 
-                className="text-white px-4 py-2 rounded-xl"
+                className="text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
                 style={{backgroundColor: colors.primary}} 
                 >
                   Αποθήκευση
@@ -643,7 +646,7 @@ onClick={()=>{
 addClient()
 setShowAddClient(false)
 }}
-className="text-white px-4 py-2 rounded-xl"
+className="text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
 style={{backgroundColor: colors.primary}}
 >
 Προσθήκη
