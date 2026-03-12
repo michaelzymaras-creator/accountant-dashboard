@@ -343,6 +343,9 @@ function Home() {
   {/* Main Content */}
   
   <main className="flex-1 p-8">
+
+    <div className="max-w-6xl mx-auto"></div>
+
     <h2 className="text-lg mb-8" style={{color: colors.text}}>
       by Michael Nerouppos
     </h2>
