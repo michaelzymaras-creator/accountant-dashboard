@@ -510,20 +510,7 @@ className="bg-black text-white px-4 py-2 rounded-xl"
       style={{backgroundColor: colors.primary}} > {loading ? "Προσθήκη..." : "Προσθήκη"} 
       </button>
       </div>
-    
-      <div className="flex gap-4 mb-4">
-      <button onClick={createNewMonth} className="bg-green-600 text-white px-4 py-2 rounded-xl" > 📅 Δημιουργία Μήνα </button>
-      <button onClick={exportPDF} 
-      className="text-white px-4 py-2 rounded-xl"
-      style={{backgroundColor: colors.primary}}
-      > 
-      📄 Export PDF 
-      </button>
       
-      <button onClick={exportExcel} className="bg-black text-white px-4 py-2 rounded-xl mb-4" > 📥 Export Excel </button>
-      
-      </div>
-    
       <input
       type="text"
       placeholder="🔎 Αναζήτηση πελάτη"
