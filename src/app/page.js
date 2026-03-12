@@ -331,7 +331,7 @@ function Home() {
     <nav className="flex flex-col gap-3 text-sm">
       
       <button className="text-left hover:bg-gray-100 p-2 rounded">
-        📊 Dashboard
+        📊 Αρχική Σελίδα
       </button>
     <button className="text-left hover:bg-gray-100 p-2 rounded">
       👥 Πελάτες
@@ -354,7 +354,7 @@ function Home() {
     <div className="flex justify-between items-center mb-8">
       
       <h2 className="text-2xl font-bold">
-        Dashboard
+        Αρχική Σελίδα
       </h2>
       
       <input
