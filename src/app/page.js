@@ -318,8 +318,8 @@ function Home() {
 return (
 
 <div className="min-h-screen flex bg-[#F9F7F2]">
-
-{/* SIDEBAR */}
+  
+  {/* SIDEBAR */}
 
 <aside className="w-64 bg-white shadow-lg p-6 flex flex-col">
 
@@ -620,7 +620,7 @@ className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
           onChange={e => setVatEnabled(e.target.checked)}
           />
           Έχει ΦΠΑ
-          </label>
+        </label>
           {vatEnabled && (
             <select
             className="border p-2 rounded-lg"
@@ -639,36 +639,31 @@ className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
           onChange={e => setNotes(e.target.value)}
           />
           
-</div>
-
-<div className="flex justify-end gap-3 mt-5">
-
-<button
-onClick={()=>setShowAddClient(false)}
-className="px-4 py-2 bg-gray-300 rounded-lg"
->
-Ακύρωση
-</button>
-
-<button
-onClick={()=>{
-addClient()
-setShowAddClient(false)
-}}
-className="text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
-style={{backgroundColor: colors.primary}}
->
-Προσθήκη
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-)}
+      </div>
+      
+      <div className="flex justify-end gap-3 mt-5">
+        <button
+        onClick={()=>setShowAddClient(false)}
+        className="px-4 py-2 bg-gray-300 rounded-lg"
+        >
+          Ακύρωση
+        </button>
+        
+        <button
+        onClick={()=>{
+          addClient()
+          setShowAddClient(false)
+        }}
+        className="text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
+        style={{backgroundColor: colors.primary}}
+        >
+          Προσθήκη
+        </button>
+      </div>
+    </div>
   </div>
-  )
+)}
+</div>
+)
 
 }
