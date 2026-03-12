@@ -440,7 +440,7 @@ color:colors.terracotta
 <div className="flex gap-3 mb-6">
   
   <button
-  onClick={()=>setShowAddClient(true)}
+  onClick={() => setShowAddClient(true)}
   className="text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
   style={{backgroundColor: colors.primary}}
   >
@@ -532,6 +532,13 @@ className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
       </table>
      </div>
     </div>
+    <button
+    onClick={() => setShowAddClient(true)}
+    className="text-white px-4 py-2 rounded-lg"
+    style={{backgroundColor: colors.primary}}
+    >
+      + Νέος Πελάτης
+    </button>
   </main>
   </div>
   )
