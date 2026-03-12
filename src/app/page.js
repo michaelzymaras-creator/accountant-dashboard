@@ -35,6 +35,7 @@ function Home() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0,7))
+  const [showAddClient, setShowAddClient] = useState(false)
   const exportExcel = () => {
     const data = clients.map
     (c => 
@@ -434,6 +435,14 @@ color:colors.terracotta
 {/* ACTION BAR */}
 
 <div className="flex gap-3 mb-6">
+  
+  <button
+  onClick={()=>setShowAddClient(true)}
+  className="text-white px-4 py-2 rounded-xl"
+  style={{backgroundColor: colors.primary}}
+  >
+    + Νέος Πελάτης
+  </button>
 
 <button
 onClick={createNewMonth}
@@ -458,59 +467,6 @@ className="bg-black text-white px-4 py-2 rounded-xl"
 </button>
 
 </div>
-
-      {/* Add Client Card */}
-     <div className="bg-white p-6 rounded-2xl shadow mb-8">
-      <h2 className="font-semibold mb-4">Προσθήκη Πελάτη</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <input className="border p-2 rounded-lg"
-        placeholder="Όνομα"
-        value={name}
-        onChange={e => setName(e.target.value)}
-        />
-        <input className="border p-2 rounded-lg"
-        placeholder="ΑΦΜ"
-        value={afm}
-        onChange={e => setAfm(e.target.value)}
-        />
-        <input
-        type="number"
-        step="0.01"
-        className="border p-2 rounded-lg"
-        placeholder="Μηνιαία Αμοιβή"
-        value={fee}
-        onChange={e => setFee(e.target.value)}
-        />
-      </div>
-      
-      <div className="mt-4">
-        <label className="flex items-center gap-2">
-          {vatEnabled && ( <select className="border p-2 rounded-lg mt-2" value={vatType} onChange={(e)=>setVatType(e.target.value)} >
-            <option value="monthly">Μηνιαίο ΦΠΑ</option>
-            <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
-            </select> 
-          )}
-          <input
-          type="checkbox"
-          checked={vatEnabled}
-          onChange={e => setVatEnabled(e.target.checked)}
-          />Έχει ΦΠΑ
-        </label>
-      </div>
-      
-      <textarea
-      className="border p-2 rounded-lg w-full mt-4"
-      placeholder="Παρατηρήσεις"
-      value={notes}
-      onChange={e => setNotes(e.target.value)}
-      />
-      <button onClick={addClient} 
-      disabled={loading} 
-      className="text-white px-4 py-2 rounded-xl"
-      style={{backgroundColor: colors.primary}} > {loading ? "Προσθήκη..." : "Προσθήκη"} 
-      </button>
-      </div>
-      
       <input
       type="text"
       placeholder="🔎 Αναζήτηση πελάτη"
@@ -601,4 +557,104 @@ className="bg-black text-white px-4 py-2 rounded-xl"
         </div>
       </div>
   )}
+
+  {showAddClient && (
+
+<div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+
+<div className="bg-white p-6 rounded-xl w-[500px]">
+
+<h2 className="text-xl font-bold mb-4">
+Προσθήκη Πελάτη
+</h2>
+
+<div className="grid grid-cols-1 gap-3">
+
+<input
+className="border p-2 rounded-lg"
+placeholder="Όνομα"
+value={name}
+onChange={e => setName(e.target.value)}
+/>
+
+<input
+className="border p-2 rounded-lg"
+placeholder="ΑΦΜ"
+value={afm}
+onChange={e => setAfm(e.target.value)}
+/>
+
+<input
+type="number"
+step="0.01"
+className="border p-2 rounded-lg"
+placeholder="Μηνιαία Αμοιβή"
+value={fee}
+onChange={e => setFee(e.target.value)}
+/>
+
+<label className="flex items-center gap-2">
+
+<input
+type="checkbox"
+checked={vatEnabled}
+onChange={e => setVatEnabled(e.target.checked)}
+/>
+
+Έχει ΦΠΑ
+
+</label>
+
+{vatEnabled && (
+
+<select
+className="border p-2 rounded-lg"
+value={vatType}
+onChange={(e)=>setVatType(e.target.value)}
+>
+
+<option value="monthly">Μηνιαίο ΦΠΑ</option>
+<option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+
+</select>
+
+)}
+
+<textarea
+className="border p-2 rounded-lg"
+placeholder="Παρατηρήσεις"
+value={notes}
+onChange={e => setNotes(e.target.value)}
+/>
+
+</div>
+
+<div className="flex justify-end gap-3 mt-5">
+
+<button
+onClick={()=>setShowAddClient(false)}
+className="px-4 py-2 bg-gray-300 rounded-lg"
+>
+Ακύρωση
+</button>
+
+<button
+onClick={()=>{
+addClient()
+setShowAddClient(false)
+}}
+className="text-white px-4 py-2 rounded-xl"
+style={{backgroundColor: colors.primary}}
+>
+Προσθήκη
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+)}
+
 }
