@@ -311,95 +311,154 @@ function Home() {
     </div>
     )
   }
-  
-  return (
-  
-  <div className="min-h-screen flex"
-  style={{backgroundColor: colors.background}}> 
-  
-  {/* Sidebar */}
 
-  <aside className="w-64 bg-white shadow-lg p-6 flex flex-col">
-
-    <h1
-    className={`${cinzel.className} text-3xl mb-8`}
-    style={{color: colors.gold}}
-    >
-      TaxTick
-    </h1>
-    
-    <nav className="flex flex-col gap-3 text-sm">
-      
-      <button className="text-left hover:bg-gray-100 p-2 rounded">
-        📊 Αρχική Σελίδα
-      </button>
-    <button className="text-left hover:bg-gray-100 p-2 rounded">
-      👥 Πελάτες
-    </button>
-    <button className="text-left hover:bg-gray-100 p-2 rounded">
-      📄 Reports
-    </button>
-    <button className="text-left hover:bg-gray-100 p-2 rounded">
-      ⚙ Settings
-    </button>
-    
-    </nav>
-    
-  </aside>
   
-  {/* Main Content */}
   
-  <main className="flex-1 p-8">
+return (
 
-    <div className="flex justify-between items-center mb-8">
-      
-      <h2 className="text-2xl font-bold">
-        Αρχική Σελίδα
-      </h2>
-      
-      <input
-      type="month"
-      value={selectedMonth}
-      onChange={(e)=>setSelectedMonth(e.target.value)}
-      className="border p-2 rounded-lg"
-      />
-    </div>
-    
-    <div className="max-w-6xl mx-auto">
-            
-      <h2 className="text-lg mb-8" style={{color: colors.text}}>
-        by Michael Nerouppos
-      </h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white p-4 rounded-xl shadow">
-          <p className="text-gray-500 text-sm">Σύνολο Πελατών</p>
-          <h3 className="text-2xl font-bold">{totalClients}</h3>
-        </div>
-      
-        <div className="bg-white p-4 rounded-xl shadow">
-        <p className="text-gray-500 text-sm">Απλήρωτοι</p>
-        <h3 className="text-2xl font-bold text-red-500">
-          {unpaidClients}
-        </h3>
-        </div>
-      
-        <div className="bg-white p-4 rounded-xl shadow">
-        <p className="text-gray-500 text-sm">Έσοδα Μήνα</p>
-        <h3 className="text-2xl font-bold text-green-600">
-          {totalIncome} €
-        </h3>
-        </div>
-      
-        <div className="bg-white p-4 rounded-xl shadow">
-        <p className="text-gray-500 text-sm">ΦΠΑ προς υποβολή</p>
-        <h3 className="text-2xl font-bold text-orange-500">
-          {vatDueClients.length}
-        </h3>
-        </div>
-      </div>
+<div className="min-h-screen flex bg-[#F9F7F2]">
 
-    
+{/* SIDEBAR */}
+
+<aside className="w-64 bg-white shadow-lg p-6 flex flex-col">
+
+<h1
+className={`${cinzel.className} text-3xl mb-10`}
+style={{color: colors.gold}}
+>
+TaxTick
+</h1>
+
+<nav className="flex flex-col gap-2 text-sm">
+
+<button className="p-3 rounded-lg hover:bg-gray-100 text-left">
+📊 Dashboard
+</button>
+
+<button className="p-3 rounded-lg hover:bg-gray-100 text-left">
+👥 Πελάτες
+</button>
+
+<button className="p-3 rounded-lg hover:bg-gray-100 text-left">
+📄 Reports
+</button>
+
+<button className="p-3 rounded-lg hover:bg-gray-100 text-left">
+⚙ Ρυθμίσεις
+</button>
+
+</nav>
+
+</aside>
+
+
+{/* MAIN */}
+
+<main className="flex-1 p-8">
+
+<div className="max-w-7xl mx-auto">
+
+
+{/* HEADER */}
+
+<div className="flex justify-between items-center mb-10">
+
+<div>
+<h2 className="text-2xl font-bold">Dashboard</h2>
+<p className="text-gray-500 text-sm">
+Διαχείριση πελατών & πληρωμών
+</p>
+</div>
+
+<input
+type="month"
+value={selectedMonth}
+onChange={(e)=>setSelectedMonth(e.target.value)}
+className="border p-2 rounded-lg"
+/>
+
+</div>
+
+
+{/* KPI CARDS */}
+
+<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+
+<div className="bg-white p-5 rounded-xl shadow">
+<p className="text-gray-500 text-sm">Σύνολο Πελατών</p>
+<h3 className="text-3xl font-bold">{totalClients}</h3>
+</div>
+
+<div className="bg-white p-5 rounded-xl shadow">
+<p className="text-gray-500 text-sm">Απλήρωτοι</p>
+<h3 className="text-3xl font-bold text-red-500">
+{unpaidClients}
+</h3>
+</div>
+
+<div className="bg-white p-5 rounded-xl shadow">
+<p className="text-gray-500 text-sm">Έσοδα Μήνα</p>
+<h3 className="text-3xl font-bold text-green-600">
+{totalIncome} €
+</h3>
+</div>
+
+<div className="bg-white p-5 rounded-xl shadow">
+<p className="text-gray-500 text-sm">ΦΠΑ προς υποβολή</p>
+<h3 className="text-3xl font-bold text-orange-500">
+{vatDueClients.length}
+</h3>
+</div>
+
+</div>
+
+
+{/* VAT ALERT */}
+
+{vatDueClients.length > 0 && (
+
+<div
+className="mb-8 p-4 rounded-xl"
+style={{
+backgroundColor:"#F5E2DD",
+border:`2px solid ${colors.terracotta}`,
+color:colors.terracotta
+}}
+>
+⚠ {vatDueClients.length} πελάτες έχουν υποβολή ΦΠΑ
+</div>
+
+)}
+
+
+{/* ACTION BAR */}
+
+<div className="flex gap-3 mb-6">
+
+<button
+onClick={createNewMonth}
+className="bg-green-600 text-white px-4 py-2 rounded-xl"
+>
+📅 Δημιουργία Μήνα
+</button>
+
+<button
+onClick={exportPDF}
+className="text-white px-4 py-2 rounded-xl"
+style={{backgroundColor: colors.primary}}
+>
+📄 PDF
+</button>
+
+<button
+onClick={exportExcel}
+className="bg-black text-white px-4 py-2 rounded-xl"
+>
+📊 Excel
+</button>
+
+</div>
+
       {/* Add Client Card */}
      <div className="bg-white p-6 rounded-2xl shadow mb-8">
       <h2 className="font-semibold mb-4">Προσθήκη Πελάτη</h2>
