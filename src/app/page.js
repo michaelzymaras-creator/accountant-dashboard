@@ -369,7 +369,34 @@ function Home() {
       by Michael Nerouppos
     </h2>
     
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"></div>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="bg-white p-4 rounded-xl shadow">
+        <p className="text-gray-500 text-sm">Σύνολο Πελατών</p>
+        <h3 className="text-2xl font-bold">{totalClients}</h3>
+      </div>
+      
+      <div className="bg-white p-4 rounded-xl shadow">
+        <p className="text-gray-500 text-sm">Απλήρωτοι</p>
+        <h3 className="text-2xl font-bold text-red-500">
+          {unpaidClients}
+        </h3>
+      </div>
+      
+      <div className="bg-white p-4 rounded-xl shadow">
+        <p className="text-gray-500 text-sm">Έσοδα Μήνα</p>
+        <h3 className="text-2xl font-bold text-green-600">
+          {totalIncome} €
+        </h3>
+      </div>
+      
+      <div className="bg-white p-4 rounded-xl shadow">
+        <p className="text-gray-500 text-sm">ΦΠΑ προς υποβολή</p>
+        <h3 className="text-2xl font-bold text-orange-500">
+          {vatDueClients.length}
+        </h3>
+      </div>
+    </div>
+
     <div className="mb-6">
       <label className="block text-sm font-semibold mb-1">
         Επιλογή Μήνα
