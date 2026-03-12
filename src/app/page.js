@@ -313,7 +313,8 @@ function Home() {
   }
   
   return (
-  <div className="min-h-screen flex"></div> 
+
+  <div className="min-h-screen flex"></div> )
   
   {/* Sidebar */}
 
@@ -550,7 +551,7 @@ function Home() {
       </table>
     </div>
   </main>
-  ) 
+  
   
   {editingClient && (
       <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
