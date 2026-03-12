@@ -529,7 +529,11 @@ className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
                   Edit 
                 </button>
 
-                <button onClick={() => deleteClient(client.id)} className="bg-red-500 text-white px-2 py-1 rounded"> Διαγραφή </button>
+                <button 
+                onClick={() => deleteClient(client.id)} 
+                className="bg-red-500 text-white px-2 py-1 rounded"> 
+                Διαγραφή 
+                </button>
               </td>
             </tr>
           ))}
@@ -544,17 +548,12 @@ className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
     >
       + Νέος Πελάτης
     </button>
-
-    {editingClient && (
-      <div className="modal">
-        ...
-      </div>
-    )}
   </main>
   </div>
   )
     
   {editingClient && (
+    <div className="modal">
       <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
         <div className="bg-white p-6 rounded-xl w-96">
           <h2 className="text-xl font-bold mb-4">Επεξεργασία Πελάτη</h2>
@@ -577,6 +576,7 @@ className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
               </div>
         </div>
       </div>
+    </div>
   )}
 
   {showAddClient && (
