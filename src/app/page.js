@@ -1,4 +1,5 @@
 'use client'
+import { Cinzel } from '@next/font/google'
 const colors = {
   background: "#F9F7F2", // Pentelic White
   primary: "#1D63A8", // Aegean Azure
@@ -325,7 +326,7 @@ const vatDueClients = clients.filter(
         </div>
       </div>
 
-      <h1 className={`${cinzel.className} text-5xl tracking-widest`}>
+      <h1 className={`${cinzel.className} text-5xl tracking-widest`} >
         TaxTick
       </h1>
 
