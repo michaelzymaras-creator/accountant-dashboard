@@ -523,7 +523,12 @@ className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
                   </button>
                 )}
                 
-                <button onClick={() => setEditingClient(client)} className="text-green-600 text-sm" > Edit </button>
+                <button 
+                onClick={() => setEditingClient(client)} 
+                className="text-green-600 text-sm" >
+                  Edit 
+                </button>
+
                 <button onClick={() => deleteClient(client.id)} className="bg-red-500 text-white px-2 py-1 rounded"> Διαγραφή </button>
               </td>
             </tr>
@@ -539,6 +544,12 @@ className="bg-black text-white px-4 py-2 rounded-lg shadow-sm hover:shadow"
     >
       + Νέος Πελάτης
     </button>
+
+    {editingClient && (
+      <div className="modal">
+        ...
+      </div>
+    )}
   </main>
   </div>
   )
