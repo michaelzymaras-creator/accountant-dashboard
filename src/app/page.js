@@ -300,38 +300,39 @@ const vatDueClients = clients.filter(
   return (
   <div className="min-h-screen p-8" style={{backgroundColor: colors.background, color: colors.text}}>
     <div className="max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
-            <div className="text-gray-500 text-sm">Πελάτες</div>
-            <div className="text-2xl font-bold">{totalClients}</div>
-          </div>
-          <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
-            <div className="text-gray-500 text-sm">Απλήρωτοι</div>
-            <div className="text-2xl font-bold text-red-600">
-              {unpaidClients}
-            </div>
-          </div>
-          <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
-            <div className="text-gray-500 text-sm">ΦΠΑ εκκρεμεί</div>
-            <div className="text-2xl font-bold text-red-500">
-              {vatDueClients.length}
-            </div>
-          </div>
-          <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
-            <div className="text-gray-500 text-sm">Έσοδα μήνα</div>
-            <div className="text-2xl font-bold text-green-600">
-              {totalIncome} €
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
+          <div className="text-gray-500 text-sm">Πελάτες</div>
+          <div className="text-2xl font-bold">{totalClients}</div>
+        </div>
+        <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
+          <div className="text-gray-500 text-sm">Απλήρωτοι</div>
+          <div className="text-2xl font-bold text-red-600">
+            {unpaidClients}
           </div>
         </div>
-        <h1 className="text-5xl font-bold tracking-wide" style={{color: colors.gold}}> 
-          TaxTick </h1>
-          <h2 className="text-2xl font-semibold" style={{color: colors.text}}>
-            by Michael Nerouppos 
-          </h2>
-
+        <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
+          <div className="text-gray-500 text-sm">ΦΠΑ εκκρεμεί</div>
+          <div className="text-2xl font-bold text-red-500">
+            {vatDueClients.length}
+          </div>
+        </div>
+        <div className="p-4 rounded-xl shadow-md" style={{backgroundColor:"#FFFFFF", border:`1px solid ${colors.gold}20`}}>
+          <div className="text-gray-500 text-sm">Έσοδα μήνα</div>
+          <div className="text-2xl font-bold text-green-600">
+            {totalIncome} €
+          </div>
+        </div>
       </div>
+      <h1 className="text-5xl font-bold tracking-wide mb-2" style={{color: colors.gold}}>
+        TaxTick
+      </h1>
+      <h2 className="text-lg mb-8" style={{color: colors.text}}>
+        by Michael Nerouppos
+      </h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"></div>
+
       <div className="mb-6">
         <label className="block text-sm font-semibold mb-1">
           Επιλογή Μήνα
