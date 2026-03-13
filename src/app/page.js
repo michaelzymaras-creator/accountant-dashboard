@@ -66,8 +66,8 @@ function deleteClient(id){
 console.log("delete",id)
 }
 
-function getVatStatus(){
-return "ok"
+function getVatStatus(client){
+    return "ok"
 }
 
 return(
