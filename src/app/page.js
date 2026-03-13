@@ -1,37 +1,58 @@
 'use client'
 
+import { supabase } from "../lib/supabase" 
+
 import { useState } from "react"
 
 import Sidebar from "../components/Sidebar"
 import Header from "../components/Header"
 import StatsCards from "../components/StatsCards"
 import ClientsTable from "../components/ClientsTable"
+import { useEffect } from "react"
+useEffect(()=>{
+    checkUser()
+},[])
 
 export default function Home(){
 
 const [selectedMonth,setSelectedMonth]=useState("2025-03")
+const [clients,setClients]=useState([])
+const [user,setUser]=useState(null)
 
-// προσωρινο fake data
-const clients=[
-{
-id:1,
-name:"Client A",
-afm:"123456789",
-monthly_fee:100,
-payment_status:"pending",
-vat_enabled:true,
-vat_submitted:false,
-vat_type:"monthly"
-},
-{
-id:2,
-name:"Client B",
-afm:"987654321",
-monthly_fee:200,
-payment_status:"paid",
-vat_enabled:false
+async function checkUser(){
+
+const { data } = await supabase.auth.getUser()
+
+if(data.user){
+setUser(data.user)
+fetchClients(data.user.id)
 }
-]
+
+}
+
+async function fetchClients(userId){
+
+const { data } = await supabase
+.from("clients")
+.select("*")
+.eq("user_id",userId)
+.eq("month",selectedMonth)
+.order("created_at",{ascending:false})
+
+if(data){
+setClients(data)
+}
+
+}
+
+useEffect(()=>{
+
+if(user){
+fetchClients(user.id)
+}
+
+},[selectedMonth])
+
 
 function togglePayment(client){
 console.log("toggle payment",client)
@@ -66,9 +87,16 @@ setSelectedMonth={setSelectedMonth}
 
 <StatsCards
 totalClients={clients.length}
-unpaidClients={clients.filter(c=>c.payment_status==="pending").length}
-totalIncome={300}
-vatDue={1}
+
+unpaidClients={
+clients.filter(c=>c.payment_status==="pending").length
+}
+
+totalIncome={
+clients
+.filter(c=>c.payment_status==="paid")
+.reduce((sum,c)=>sum+Number(c.monthly_fee||0),0)
+}
 />
 
 <ClientsTable
