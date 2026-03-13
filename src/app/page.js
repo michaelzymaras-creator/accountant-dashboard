@@ -1,7 +1,6 @@
 'use client'
 
 import { supabase } from "../lib/supabase" 
-
 import { useState } from "react"
 
 import Sidebar from "../components/Sidebar"
@@ -9,15 +8,16 @@ import Header from "../components/Header"
 import StatsCards from "../components/StatsCards"
 import ClientsTable from "../components/ClientsTable"
 import { useEffect } from "react"
-useEffect(()=>{
-    checkUser()
-},[])
 
 export default function Home(){
 
 const [selectedMonth,setSelectedMonth]=useState("2025-03")
 const [clients,setClients]=useState([])
 const [user,setUser]=useState(null)
+
+useEffect(()=>{
+    checkUser()
+},[])
 
 async function checkUser(){
 
