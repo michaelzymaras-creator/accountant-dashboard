@@ -19,33 +19,32 @@ console.log("USER:", user)
 
 
 async function addClient() {
-  if (!user) return alert("Περιμένετε να ολοκληρωθεί η σύνδεση...");
-  if (!name || !afm) return alert("Παρακαλώ συμπληρώστε Όνομα και ΑΦΜ");
+  if (!user) return alert("Περιμένετε να φορτώσει ο χρήστης...");
+  if (!name || !afm) return alert("Συμπληρώστε Όνομα και ΑΦΜ");
 
   const { error } = await supabase
     .from("clients")
     .insert([{
       user_id: user.id,
-      name: name,
-      afm: afm,
+      name,
+      afm,
       monthly_fee: Number(fee) || 0,
       payment_status: "pending",
-      has_vat: false, // Προεπιλογή από τη βάση σου
-      vat_percentage: 24
+      vat_submitted: false,
+      vat_type: 'monthly', // default τιμή
+      month: selectedMonth // Εδώ συνδέουμε τον μήνα που έχεις επιλέξει στο Header
     }])
 
   if (error) {
-    console.error("Error inserting:", error)
     alert("Σφάλμα: " + error.message)
     return
   }
 
-  // Καθαρισμός φορμών και ανανέωση λίστας
-  setName("")
-  setAfm("")
-  setFee("")
-  fetchClients(user.id) 
+  // Καθαρισμός και ανανέωση
+  setName(""); setAfm(""); setFee("");
+  fetchClients(user.id);
 }
+
 
 const [selectedMonth,setSelectedMonth]=useState("2025-03")
 const [clients,setClients]=useState([])
