@@ -140,17 +140,17 @@ useEffect(() => {
               <input placeholder="Όνομα" value={name} onChange={e => setName(e.target.value)} className="border p-2 rounded flex-1" />
               <input placeholder="ΑΦΜ" value={afm} onChange={e => setAfm(e.target.value)} className="border p-2 rounded flex-1" />
               <input placeholder="Αμοιβή" type="number" value={fee} onChange={e => setFee(e.target.value)} className="border p-2 rounded w-32" />
-              <button 
-  onClick={addClient} 
-  disabled={!user} // Το κουμπί "κλειδώνει" μέχρι να φορτώσει ο χρήστης
-  className={`px-6 rounded-lg transition ${
-    !user 
-    ? "bg-gray-400 cursor-not-allowed" 
-    : "bg-blue-600 hover:bg-blue-700 text-white"
-  }`}
->
-  {!user ? "Φορτώνει..." : "Προσθήκη"}
-</button>
+              <button
+                onClick={addClient} 
+                disabled={!user} // Το κουμπί "κλειδώνει" μέχρι να φορτώσει ο χρήστης
+                className={`px-6 rounded-lg transition ${
+                    !user 
+                    ? "bg-gray-400 cursor-not-allowed" 
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                    }`}
+                    >
+                    {!user ? "Φορτώνει..." : "Προσθήκη"}
+                </button>
 
             </div>
           </div>
