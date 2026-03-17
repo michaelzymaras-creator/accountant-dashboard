@@ -35,22 +35,18 @@ export default function Home() {
 useEffect(() => {
   const initAuth = async () => {
     try {
-      // Χρησιμοποιούμε getUser() αντί για getSession() για μεγαλύτερη αξιοπιστία
-      const { data: { user: authUser }, error } = await supabase.auth.getUser();
-      
+      const { data: { user: authUser } } = await supabase.auth.getUser();
       if (authUser) {
         setUser(authUser);
         fetchClients(authUser.id);
       } else {
-        console.log("No active user session found");
-        window.location.href = "/login";
-        // Αν θες να το ξεκλειδώσεις για τεστ, μπορείς να βάλεις setUser({id: 'dummy'}) 
-        // Αλλά το σωστό είναι να σιγουρευτείς ότι έχεις κάνει login
+        // Αντί για redirect, απλά σταματάμε το loading
+        console.log("Πρέπει να συνδεθείτε");
       }
     } catch (err) {
       console.error("Auth error:", err);
     } finally {
-      setLoading(false); // Σταματάει το loading ό,τι και να γίνει
+      setLoading(false);
     }
   };
 
@@ -67,6 +63,7 @@ useEffect(() => {
 
   return () => subscription.unsubscribe();
 }, [fetchClients]);
+
 
 
   async function addClient() {
