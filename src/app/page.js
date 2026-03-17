@@ -12,7 +12,7 @@ export default function Home() {
   const [name, setName] = useState("")
   const [afm, setAfm] = useState("")
   const [fee, setFee] = useState("")
-  const [selectedMonth, setSelectedMonth] = useState("2025-03")
+  const [selectedMonth, setSelectedMonth] = useState("2026-01") 
   const [clients, setClients] = useState([])
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
