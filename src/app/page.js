@@ -1,190 +1,151 @@
 'use client'
 
 import { supabase } from "../lib/supabase" 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 import Sidebar from "../components/Sidebar"
 import Header from "../components/Header"
 import StatsCards from "../components/StatsCards"
 import ClientsTable from "../components/ClientsTable"
-import { useEffect } from "react"
 
-export default function Home(){
+export default function Home() {
+  const [name, setName] = useState("")
+  const [afm, setAfm] = useState("")
+  const [fee, setFee] = useState("")
+  const [selectedMonth, setSelectedMonth] = useState("2025-03")
+  const [clients, setClients] = useState([])
+  const [user, setUser] = useState(null)
 
-const [name,setName]=useState("")
-const [afm,setAfm]=useState("")
-const [fee,setFee]=useState("") 
+  useEffect(() => {
+    checkUser()
+  }, [])
 
-console.log("USER:", user)
+  // Κάθε φορά που αλλάζει ο μήνας ή ο χρήστης, φέρε τα νέα δεδομένα
+  useEffect(() => {
+    if (user) {
+      fetchClients(user.id)
+    }
+  }, [selectedMonth, user])
 
-
-async function addClient() {
-  if (!user) return alert("Περιμένετε να φορτώσει ο χρήστης...");
-  if (!name || !afm) return alert("Συμπληρώστε Όνομα και ΑΦΜ");
-
-  const { error } = await supabase
-    .from("clients")
-    .insert([{
-      user_id: user.id,
-      name,
-      afm,
-      monthly_fee: Number(fee) || 0,
-      payment_status: "pending",
-      vat_submitted: false,
-      vat_type: 'monthly', 
-      month: selectedMonth 
-    }])
-
-  if (error) {
-    alert("Σφάλμα: " + error.message)
-    return
+  async function checkUser() {
+    const { data } = await supabase.auth.getUser()
+    if (data.user) {
+      setUser(data.user)
+    }
   }
 
-  
-  setName(""); setAfm(""); setFee("");
-  fetchClients(user.id);
-}
+  async function fetchClients(userId) {
+    const { data, error } = await supabase
+      .from("clients")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("month", selectedMonth) // Φιλτράρισμα βάσει μήνα
+      .order("created_at", { ascending: false })
 
+    if (data) setClients(data)
+    if (error) console.error("Error fetching:", error)
+  }
 
-const [selectedMonth,setSelectedMonth]=useState("2025-03")
-const [clients,setClients]=useState([])
-const [user,setUser]=useState(null)
+  async function addClient() {
+    if (!user) return alert("Περιμένετε να φορτώσει ο χρήστης")
+    if (!name || !afm) return alert("Βάλε όνομα και ΑΦΜ")
 
-useEffect(()=>{
-    checkUser()
-},[])
+    const { error } = await supabase
+      .from("clients")
+      .insert([{
+        user_id: user.id,
+        name,
+        afm,
+        monthly_fee: Number(fee) || 0,
+        payment_status: "pending",
+        month: selectedMonth,
+        vat_enabled: true, // Προεπιλογή
+        vat_type: 'monthly'
+      }])
 
-async function checkUser(){
+    if (error) {
+      alert(error.message)
+      return
+    }
 
-const { data } = await supabase.auth.getUser()
+    setName(""); setAfm(""); setFee("")
+    fetchClients(user.id)
+  }
 
-if(data.user){
-setUser(data.user)
-fetchClients(data.user.id)
-}
+  // Λειτουργία Πληρωμής
+  async function togglePayment(client) {
+    const newStatus = client.payment_status === "paid" ? "pending" : "paid"
+    const { error } = await supabase
+      .from("clients")
+      .update({ payment_status: newStatus })
+      .eq("id", client.id)
 
-}
+    if (!error) fetchClients(user.id)
+  }
 
-async function fetchClients(userId) {
-  const { data, error } = await supabase
-    .from("clients")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("month", selectedMonth)
-    .order("created_at", { ascending: false })
+  // Λειτουργία ΦΠΑ
+  async function toggleVatSubmitted(client) {
+    const { error } = await supabase
+      .from("clients")
+      .update({ vat_submitted: !client.vat_submitted })
+      .eq("id", client.id)
 
-  if (data) setClients(data)
-}
+    if (!error) fetchClients(user.id)
+  }
 
+  // Διαγραφή Πελάτη
+  async function deleteClient(id) {
+    if (!confirm("Είσαι σίγουρος για τη διαγραφή;")) return
+    
+    const { error } = await supabase
+      .from("clients")
+      .delete()
+      .eq("id", id)
 
-useEffect(()=>{
+    if (!error) fetchClients(user.id)
+  }
 
-if(user){
-fetchClients(user.id)
-}
-
-},[selectedMonth])
-
-
-function togglePayment(client){
-console.log("toggle payment",client)
-}
-
-function toggleVatSubmitted(client){
-console.log("toggle vat",client)
-}
-
-function deleteClient(id){
-console.log("delete",id)
-}
-
-function getVatStatus(client){
+  function getVatStatus(client) {
+    // Εδώ μπορείς να βάλεις λογική για το αν πλησιάζει η προθεσμία
     return "ok"
-}
+  }
 
-return(
+  return (
+    <div className="min-h-screen flex bg-[#F9F7F2]">
+      <Sidebar />
+      <main className="flex-1 p-8">
+        <div className="max-w-7xl mx-auto">
+          <Header selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} />
+          
+          <StatsCards 
+            totalClients={clients.length}
+            unpaidClients={clients.filter(c => c.payment_status === "pending").length}
+            totalIncome={clients.filter(c => c.payment_status === "paid").reduce((sum, c) => sum + Number(c.monthly_fee || 0), 0)}
+          />
 
-<div className="min-h-screen flex bg-[#F9F7F2]">
+          {/* Form Νέου Πελάτη */}
+          <div className="bg-white p-4 rounded-xl shadow mb-6">
+            <h3 className="mb-3 font-semibold text-gray-700">Νέος Πελάτης ({selectedMonth})</h3>
+            <div className="flex gap-2">
+              <input placeholder="Όνομα" value={name} onChange={e => setName(e.target.value)} className="border p-2 rounded flex-1" />
+              <input placeholder="ΑΦΜ" value={afm} onChange={e => setAfm(e.target.value)} className="border p-2 rounded flex-1" />
+              <input placeholder="Αμοιβή" type="number" value={fee} onChange={e => setFee(e.target.value)} className="border p-2 rounded w-32" />
+              <button onClick={addClient} className="bg-blue-600 text-white px-6 rounded-lg hover:bg-blue-700 transition">
+                Προσθήκη
+              </button>
+            </div>
+          </div>
 
-<Sidebar/>
-
-<main className="flex-1 p-8">
-
-<div className="max-w-7xl mx-auto">
-
-<Header
-selectedMonth={selectedMonth}
-setSelectedMonth={setSelectedMonth}
-/>
-
-<StatsCards
-totalClients={clients.length}
-
-unpaidClients={
-clients.filter(c=>c.payment_status==="pending").length
-}
-
-totalIncome={
-clients
-.filter(c=>c.payment_status==="paid")
-.reduce((sum,c)=>sum+Number(c.monthly_fee||0),0)
-}
-/>
-
-<div className="bg-white p-4 rounded-xl shadow mb-6">
-
-<h3 className="mb-3 font-semibold">Νέος Πελάτης</h3>
-
-<div className="flex gap-2">
-
-<input
-placeholder="Όνομα"
-value={name}
-onChange={e=>setName(e.target.value)}
-className="border p-2 rounded"
-/>
-
-<input
-placeholder="ΑΦΜ"
-value={afm}
-onChange={e=>setAfm(e.target.value)}
-className="border p-2 rounded"
-/>
-
-<input
-placeholder="Αμοιβή"
-value={fee}
-onChange={e=>setFee(e.target.value)}
-className="border p-2 rounded"
-/>
-
-<button
-  onClick={addClient}
-    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
->
-  Προσθήκη
-</button>
-
-
-</div>
-
-</div>
-
-<ClientsTable
-clients={clients}
-togglePayment={togglePayment}
-toggleVatSubmitted={toggleVatSubmitted}
-deleteClient={deleteClient}
-setEditingClient={()=>{}}
-getVatStatus={getVatStatus}
-/>
-
-</div>
-
-</main>
-
-</div>
-
-)
-
+          <ClientsTable
+            clients={clients}
+            togglePayment={togglePayment}
+            toggleVatSubmitted={toggleVatSubmitted}
+            deleteClient={deleteClient}
+            setEditingClient={() => {}} // Θα το φτιάξουμε μετά αν θες
+            getVatStatus={getVatStatus}
+          />
+        </div>
+      </main>
+    </div>
+  )
 }
