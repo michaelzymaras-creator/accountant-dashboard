@@ -24,9 +24,10 @@ export default function Home() {
   if (!clients.length) return alert("Δεν υπάρχουν πελάτες για αντιγραφή");
   
   // Υπολογισμός επόμενου μήνα
-  const current = new Date(selectedMonth + "-01");
-  current.setMonth(current.getMonth() + 1);
-  const nextMonth = current.toISOString().slice(0, 7);
+  const [year, month] = selectedMonth.split('-').map(Number);
+  const date = new Date(year, month - 1, 1); // Δημιουργούμε την ημερομηνία (ο μήνας στην JS ξεκινά από το 0)
+
+  const nextMonth = date.toISOString().slice(0, 7);
 
   if (!confirm(`Θέλετε να αντιγράψετε ${clients.length} πελάτες στον μήνα ${nextMonth};`)) return;
 
@@ -36,11 +37,11 @@ export default function Home() {
     name: client.name,
     afm: client.afm,
     monthly_fee: client.monthly_fee,
-    payment_status: "pending", // Ξεκινάνε ως απλήρωτοι τον νέο μήνα
+    payment_status: "pending",
     vat_submitted: false,
     vat_enabled: client.vat_enabled,
     vat_type: client.vat_type,
-    month: nextMonth // Ο νέος μήνας
+    month: nextMonth
   }));
 
   const { error } = await supabase.from("clients").insert(newRecords);
