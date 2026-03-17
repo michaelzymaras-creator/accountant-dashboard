@@ -17,6 +17,7 @@ const [fee,setFee]=useState("")
 
 console.log("USER:", user)
 
+
 async function addClient(){
 
   if(!user){
@@ -169,9 +170,8 @@ className="border p-2 rounded"
 />
 
 <button
-  onClick={addClient}
-  disabled={!user}
-  className="bg-blue-600 text-white px-4 rounded disabled:opacity-50"
+  onClick={() => console.log("BUTTON CLICKED")}
+  className="bg-blue-600 text-white px-4 rounded"
 >
   Προσθήκη
 </button>
