@@ -164,21 +164,51 @@ useEffect(() => {
             totalIncome={clients.filter(c => c.payment_status === "paid").reduce((sum, c) => sum + (Number(c.monthly_fee) || 0), 0)}
           />
 
-          <div className="bg-white p-4 rounded-xl shadow mb-6">
-            <h3 className="mb-3 font-semibold text-gray-700">Νέος Πελάτης ({selectedMonth})</h3>
-            <div className="flex gap-2">
-              <input placeholder="Όνομα" value={name} onChange={e => setName(e.target.value)} className="border p-2 rounded flex-1" />
-              <input placeholder="ΑΦΜ" value={afm} onChange={e => setAfm(e.target.value)} className="border p-2 rounded flex-1" />
-              <input placeholder="Αμοιβή" type="number" value={fee} onChange={e => setFee(e.target.value)} className="border p-2 rounded w-32" />
-              <button 
-                onClick={addClient} 
-                className="bg-blue-600 text-white px-6 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400"
-                
-              >
-                Προσθήκη
-              </button>
-            </div>
-          </div>
+<div className="bg-white p-4 rounded-xl shadow mb-6">
+  
+  {/* Εδώ προσθέτουμε ένα flex container για τον τίτλο και το κουμπί αντιγραφής */}
+  <div className="flex justify-between items-center mb-4">
+    <h3 className="font-semibold text-gray-700">Νέος Πελάτης ({selectedMonth})</h3>
+    
+    <button 
+      onClick={copyClientsToNextMonth}
+      className="text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-200 transition font-bold border border-green-200 flex items-center gap-1"
+    >
+      <span>📋</span> Αντιγραφή στον επόμενο μήνα
+    </button>
+  </div>
+
+  <div className="flex gap-2">
+    <input 
+      placeholder="Όνομα" 
+      value={name} 
+      onChange={e => setName(e.target.value)} 
+      className="border p-2 rounded flex-1 outline-none focus:ring-1 focus:ring-blue-500" 
+    />
+    <input 
+      placeholder="ΑΦΜ" 
+      value={afm} 
+      onChange={e => setAfm(e.target.value)} 
+      className="border p-2 rounded flex-1 outline-none focus:ring-1 focus:ring-blue-500" 
+    />
+    <input 
+      placeholder="Αμοιβή" 
+      type="number" 
+      value={fee} 
+      onChange={e => setFee(e.target.value)} 
+      className="border p-2 rounded w-32 outline-none focus:ring-1 focus:ring-blue-500" 
+    />
+    <button 
+      onClick={addClient} 
+      className="bg-blue-600 text-white px-6 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 font-medium"
+      disabled={!user}
+    >
+      Προσθήκη
+    </button>
+  </div>
+
+</div>
+
 
           <ClientsTable
             clients={clients}
