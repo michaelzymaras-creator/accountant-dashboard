@@ -27,12 +27,22 @@ export default function Home() {
     }
   }, [selectedMonth, user])
 
-  async function checkUser() {
-    const { data } = await supabase.auth.getUser()
-    if (data.user) {
-      setUser(data.user)
+useEffect(() => {
+  // Αυτό "πιάνει" αμέσως αν ο χρήστης είναι ήδη συνδεδεμένος
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      setUser(session.user)
     }
-  }
+  })
+
+  // Αυτό παρακολουθεί αν αλλάξει κάτι (π.χ. login/logout)
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    setUser(session?.user ?? null)
+  })
+
+  return () => subscription.unsubscribe()
+}, [])
+
 
   async function fetchClients(userId) {
     const { data, error } = await supabase
@@ -130,9 +140,18 @@ export default function Home() {
               <input placeholder="Όνομα" value={name} onChange={e => setName(e.target.value)} className="border p-2 rounded flex-1" />
               <input placeholder="ΑΦΜ" value={afm} onChange={e => setAfm(e.target.value)} className="border p-2 rounded flex-1" />
               <input placeholder="Αμοιβή" type="number" value={fee} onChange={e => setFee(e.target.value)} className="border p-2 rounded w-32" />
-              <button onClick={addClient} className="bg-blue-600 text-white px-6 rounded-lg hover:bg-blue-700 transition">
-                Προσθήκη
-              </button>
+              <button 
+  onClick={addClient} 
+  disabled={!user} // Το κουμπί "κλειδώνει" μέχρι να φορτώσει ο χρήστης
+  className={`px-6 rounded-lg transition ${
+    !user 
+    ? "bg-gray-400 cursor-not-allowed" 
+    : "bg-blue-600 hover:bg-blue-700 text-white"
+  }`}
+>
+  {!user ? "Φορτώνει..." : "Προσθήκη"}
+</button>
+
             </div>
           </div>
 
