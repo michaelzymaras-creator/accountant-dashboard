@@ -166,8 +166,8 @@ className="border p-2 rounded"
 />
 
 <button
-  onClick={() => console.log("BUTTON CLICKED")}
-  className="bg-blue-600 text-white px-4 rounded"
+  onClick={addClient}
+    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
 >
   Προσθήκη
 </button>
