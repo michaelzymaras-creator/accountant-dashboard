@@ -31,8 +31,8 @@ async function addClient() {
       monthly_fee: Number(fee) || 0,
       payment_status: "pending",
       vat_submitted: false,
-      vat_type: 'monthly', // default τιμή
-      month: selectedMonth // Εδώ συνδέουμε τον μήνα που έχεις επιλέξει στο Header
+      vat_type: 'monthly', 
+      month: selectedMonth 
     }])
 
   if (error) {
@@ -40,7 +40,7 @@ async function addClient() {
     return
   }
 
-  // Καθαρισμός και ανανέωση
+  
   setName(""); setAfm(""); setFee("");
   fetchClients(user.id);
 }
@@ -66,17 +66,16 @@ fetchClients(data.user.id)
 }
 
 async function fetchClients(userId) {
-  console.log("FETCH CLIENTS FOR USER:", userId)
   const { data, error } = await supabase
     .from("clients")
     .select("*")
     .eq("user_id", userId)
+    .eq("month", selectedMonth)
     .order("created_at", { ascending: false })
-
-  console.log({ data, error })
 
   if (data) setClients(data)
 }
+
 
 useEffect(()=>{
 
