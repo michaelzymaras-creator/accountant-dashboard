@@ -32,7 +32,7 @@ const { data, error } = await supabase
 user_id: user.id,
 name,
 afm,
-monthly_fee: fee,
+monthly_fee: Number(fee),
 payment_status: "pending"
 }])
 .select()
