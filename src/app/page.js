@@ -21,38 +21,49 @@ export default function Home() {
 
   
   async function copyClientsToNextMonth() {
-  if (!clients.length) return alert("Δεν υπάρχουν πελάτες για αντιγραφή");
+  if (!clients || clients.length === 0) return alert("Δεν υπάρχουν πελάτες για αντιγραφή");
   
-  // Υπολογισμός επόμενου μήνα
-  const [year, month] = selectedMonth.split('-').map(Number);
-  const date = new Date(year, month - 1, 1); // Δημιουργούμε την ημερομηνία (ο μήνας στην JS ξεκινά από το 0)
+  // 1. Παίρνουμε τον τρέχοντα χρόνο από το state (π.χ. "2026-03")
+  let [year, month] = selectedMonth.split('-').map(Number);
+  
+  // 2. Υπολογίζουμε τον επόμενο μήνα με απλά μαθηματικά
+  let nextMonthNum = month + 1;
+  let nextYearNum = year;
+  
+  if (nextMonthNum > 12) {
+    nextMonthNum = 1;
+    nextYearNum = year + 1;
+  }
 
-  const nextMonth = date.toISOString().slice(0, 7);
+  // 3. Φτιάχνουμε το string (π.χ. "2026-04")
+  const nextMonthStr = `${nextYearNum}-${String(nextMonthNum).padStart(2, '0')}`;
 
-  if (!confirm(`Θέλετε να αντιγράψετε ${clients.length} πελάτες στον μήνα ${nextMonth};`)) return;
+  if (!confirm(`Αντιγραφή ${clients.length} πελατών από τον ${selectedMonth} στον ${nextMonthStr};`)) return;
 
-  // Προετοιμασία των δεδομένων για τη νέα εγγραφή
+  // 4. Προετοιμασία των νέων εγγραφών
   const newRecords = clients.map(client => ({
     user_id: user.id,
     name: client.name,
     afm: client.afm,
-    monthly_fee: client.monthly_fee,
+    monthly_fee: Number(client.monthly_fee) || 0,
     payment_status: "pending",
     vat_submitted: false,
-    vat_enabled: client.vat_enabled,
-    vat_type: client.vat_type,
-    month: nextMonth
+    vat_enabled: client.vat_enabled || false,
+    vat_type: client.vat_type || 'monthly',
+    month: nextMonthStr // Ο νέος μήνας
   }));
 
   const { error } = await supabase.from("clients").insert(newRecords);
 
   if (error) {
+    console.error("Insert error:", error);
     alert("Σφάλμα κατά την αντιγραφή: " + error.message);
   } else {
-    alert(`Επιτυχής αντιγραφή στον μήνα ${nextMonth}!`);
-    setSelectedMonth(nextMonth); // Σε πάει αυτόματα στον νέο μήνα
+    alert(`Η αντιγραφή στον ${nextMonthStr} ολοκληρώθηκε!`);
+    setSelectedMonth(nextMonthStr); // Σε πάει αυτόματα στον επόμενο μήνα
   }
 }
+
 
   const fetchClients = useCallback(async (userId) => {
     if (!userId) return;
