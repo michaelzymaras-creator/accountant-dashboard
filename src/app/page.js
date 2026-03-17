@@ -32,29 +32,41 @@ export default function Home() {
     if (error) console.error("Error fetching clients:", error)
   }, [selectedMonth])
 
-  useEffect(() => {
-    // 1. Έλεγχος χρήστη αμέσως μόλις φορτώσει η σελίδα
-    const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
-        setUser(session.user)
-        fetchClients(session.user.id)
+useEffect(() => {
+  const initAuth = async () => {
+    try {
+      // Χρησιμοποιούμε getUser() αντί για getSession() για μεγαλύτερη αξιοπιστία
+      const { data: { user: authUser }, error } = await supabase.auth.getUser();
+      
+      if (authUser) {
+        setUser(authUser);
+        fetchClients(authUser.id);
+      } else {
+        console.log("No active user session found");
+        // Αν θες να το ξεκλειδώσεις για τεστ, μπορείς να βάλεις setUser({id: 'dummy'}) 
+        // Αλλά το σωστό είναι να σιγουρευτείς ότι έχεις κάνει login
       }
-      setLoading(false)
+    } catch (err) {
+      console.error("Auth error:", err);
+    } finally {
+      setLoading(false); // Σταματάει το loading ό,τι και να γίνει
     }
+  };
 
-    getInitialSession()
+  initAuth();
 
-    // 2. Listener για αλλαγές στο login status
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchClients(session.user.id)
-      }
-    })
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    if (session?.user) {
+      setUser(session.user);
+      fetchClients(session.user.id);
+    } else {
+      setUser(null);
+    }
+  });
 
-    return () => subscription.unsubscribe()
-  }, [fetchClients])
+  return () => subscription.unsubscribe();
+}, [fetchClients]);
+
 
   async function addClient() {
     if (!user?.id) return alert("Δεν είστε συνδεδεμένος")
