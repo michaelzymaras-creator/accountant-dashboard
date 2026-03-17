@@ -43,6 +43,7 @@ useEffect(() => {
         fetchClients(authUser.id);
       } else {
         console.log("No active user session found");
+        window.location.href = "/login";
         // Αν θες να το ξεκλειδώσεις για τεστ, μπορείς να βάλεις setUser({id: 'dummy'}) 
         // Αλλά το σωστό είναι να σιγουρευτείς ότι έχεις κάνει login
       }
