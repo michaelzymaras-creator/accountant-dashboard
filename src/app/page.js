@@ -18,39 +18,37 @@ const [fee,setFee]=useState("")
 console.log("USER:", user)
 
 async function addClient(){
-    console.log("CLICKED")
-    console.log("USER inside addClient:", user)
 
+  if(!user){
+    alert("Περίμενε 1 δευτερόλεπτο να φορτώσει")
+    return
+  }
 
-if(!user){
-alert("Δεν έχει γίνει login ακόμα")
-return
-}
+  console.log("CLICKED")
 
-if(!name) return alert("Βάλε όνομα")
+  if(!name) return alert("Βάλε όνομα")
 
-const { data, error } = await supabase
-.from("clients")
-.insert([{
-user_id: user.id,
-name,
-afm,
-monthly_fee: Number(fee),
-payment_status: "pending"
-}])
-.select()
+  const { error } = await supabase
+    .from("clients")
+    .insert([{
+      user_id: user.id,
+      name,
+      afm,
+      monthly_fee: Number(fee),
+      payment_status: "pending"
+    }])
 
-if(error){
-console.log(error)
-alert(error.message)
-return
-}
+  if(error){
+    console.log(error)
+    alert(error.message)
+    return
+  }
 
-setClients(prev => [data[0], ...prev])
+  await fetchClients(user.id)
 
-setName("")
-setAfm("")
-setFee("")
+  setName("")
+  setAfm("")
+  setFee("")
 }
 
 const [selectedMonth,setSelectedMonth]=useState("2025-03")
@@ -171,11 +169,13 @@ className="border p-2 rounded"
 />
 
 <button
-onClick={addClient}
-className="bg-blue-600 text-white px-4 rounded"
+  onClick={addClient}
+  disabled={!user}
+  className="bg-blue-600 text-white px-4 rounded disabled:opacity-50"
 >
-Προσθήκη
+  Προσθήκη
 </button>
+
 
 </div>
 
