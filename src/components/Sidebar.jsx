@@ -11,7 +11,7 @@ TaxTick
 <nav className="flex flex-col gap-2 text-sm">
 
 <button className="p-3 rounded-lg hover:bg-gray-100 text-left">
-📊 Dashboard
+📊 Αρχική Σελίδα
 </button>
 
 <button className="p-3 rounded-lg hover:bg-gray-100 text-left">

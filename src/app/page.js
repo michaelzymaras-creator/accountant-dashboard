@@ -11,6 +11,37 @@ import { useEffect } from "react"
 
 export default function Home(){
 
+const [name,setName]=useState("")
+const [afm,setAfm]=useState("")
+const [fee,setFee]=useState("") 
+
+async function addClient(){
+
+if(!name) return alert("Βάλε όνομα")
+
+const { data, error } = await supabase
+.from("clients")
+.insert([{
+user_id: user.id,
+name,
+afm,
+monthly_fee: fee,
+payment_status: "pending"
+}])
+.select()
+
+if(error){
+alert(error.message)
+return
+}
+
+setClients([data[0], ...clients])
+
+setName("")
+setAfm("")
+setFee("")
+}
+
 const [selectedMonth,setSelectedMonth]=useState("2025-03")
 const [clients,setClients]=useState([])
 const [user,setUser]=useState(null)
@@ -36,12 +67,14 @@ const { data } = await supabase
 .from("clients")
 .select("*")
 .eq("user_id",userId)
-.eq("month",selectedMonth)
+// .eq("month",selectedMonth) 
 .order("created_at",{ascending:false})
 
 if(data){
 setClients(data)
 }
+
+console.log("DATA:", data)
 
 }
 
@@ -98,6 +131,44 @@ clients
 .reduce((sum,c)=>sum+Number(c.monthly_fee||0),0)
 }
 />
+
+<div className="bg-white p-4 rounded-xl shadow mb-6">
+
+<h3 className="mb-3 font-semibold">Νέος Πελάτης</h3>
+
+<div className="flex gap-2">
+
+<input
+placeholder="Όνομα"
+value={name}
+onChange={e=>setName(e.target.value)}
+className="border p-2 rounded"
+/>
+
+<input
+placeholder="ΑΦΜ"
+value={afm}
+onChange={e=>setAfm(e.target.value)}
+className="border p-2 rounded"
+/>
+
+<input
+placeholder="Αμοιβή"
+value={fee}
+onChange={e=>setFee(e.target.value)}
+className="border p-2 rounded"
+/>
+
+<button
+onClick={addClient}
+className="bg-blue-600 text-white px-4 rounded"
+>
+Προσθήκη
+</button>
+
+</div>
+
+</div>
 
 <ClientsTable
 clients={clients}
