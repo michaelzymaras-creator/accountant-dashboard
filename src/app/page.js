@@ -9,15 +9,50 @@ import StatsCards from "../components/StatsCards"
 import ClientsTable from "../components/ClientsTable"
 
 export default function Home() {
+  
   const [name, setName] = useState("")
   const [afm, setAfm] = useState("")
   const [fee, setFee] = useState("")
-  const [selectedMonth, setSelectedMonth] = useState("2026-01") 
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7))
+ 
   const [clients, setClients] = useState([])
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Χρησιμοποιούμε useCallback για να μην ξαναδημιουργείται η συνάρτηση άσκοπα
+  
+  async function copyClientsToNextMonth() {
+  if (!clients.length) return alert("Δεν υπάρχουν πελάτες για αντιγραφή");
+  
+  // Υπολογισμός επόμενου μήνα
+  const current = new Date(selectedMonth + "-01");
+  current.setMonth(current.getMonth() + 1);
+  const nextMonth = current.toISOString().slice(0, 7);
+
+  if (!confirm(`Θέλετε να αντιγράψετε ${clients.length} πελάτες στον μήνα ${nextMonth};`)) return;
+
+  // Προετοιμασία των δεδομένων για τη νέα εγγραφή
+  const newRecords = clients.map(client => ({
+    user_id: user.id,
+    name: client.name,
+    afm: client.afm,
+    monthly_fee: client.monthly_fee,
+    payment_status: "pending", // Ξεκινάνε ως απλήρωτοι τον νέο μήνα
+    vat_submitted: false,
+    vat_enabled: client.vat_enabled,
+    vat_type: client.vat_type,
+    month: nextMonth // Ο νέος μήνας
+  }));
+
+  const { error } = await supabase.from("clients").insert(newRecords);
+
+  if (error) {
+    alert("Σφάλμα κατά την αντιγραφή: " + error.message);
+  } else {
+    alert(`Επιτυχής αντιγραφή στον μήνα ${nextMonth}!`);
+    setSelectedMonth(nextMonth); // Σε πάει αυτόματα στον νέο μήνα
+  }
+}
+
   const fetchClients = useCallback(async (userId) => {
     if (!userId) return;
     
