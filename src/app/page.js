@@ -71,21 +71,17 @@ fetchClients(data.user.id)
 
 }
 
-async function fetchClients(userId){
+async function fetchClients(userId) {
+  console.log("FETCH CLIENTS FOR USER:", userId)
+  const { data, error } = await supabase
+    .from("clients")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
 
-const { data } = await supabase
-.from("clients")
-.select("*")
-.eq("user_id",userId)
-// .eq("month",selectedMonth) 
-.order("created_at",{ascending:false})
+  console.log({ data, error })
 
-if(data){
-setClients(data)
-}
-
-console.log("DATA:", data)
-
+  if (data) setClients(data)
 }
 
 useEffect(()=>{
