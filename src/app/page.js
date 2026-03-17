@@ -43,7 +43,7 @@ alert(error.message)
 return
 }
 
-setClients([data[0], ...clients])
+setClients(prev => [data[0], ...prev])
 
 setName("")
 setAfm("")
