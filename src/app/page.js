@@ -18,6 +18,8 @@ const [fee,setFee]=useState("")
 console.log("USER:", user)
 
 async function addClient(){
+    console.log("USER inside addClient:", user)
+    
 
 if(!user){
 alert("Δεν έχει γίνει login ακόμα")
