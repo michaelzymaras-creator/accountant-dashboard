@@ -1,4 +1,4 @@
-export default function StatsCards({totalClients,unpaidClients,totalIncome,vatDue}) {
+export default function StatsCards({ totalClients, unpaidClients, totalIncome, vatDue }) {
 
 return (
 
