@@ -16,7 +16,8 @@ export default function Home() {
   const [name, setName] = useState("")
   const [afm, setAfm] = useState("")
   const [fee, setFee] = useState("")
-  const [vatType, setVatType] = useState("monthly")
+  const [vatType, setVatType] = useState("monthly") // monthly, quarterly, none
+  
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7))
   const [clients, setClients] = useState([])
   const [user, setUser] = useState(null)
@@ -28,23 +29,17 @@ export default function Home() {
   const [editFee, setEditFee] = useState("")
   const [editVatType, setEditVatType] = useState("monthly")
 
-  // --- 2. ΣΥΝΑΡΤΗΣΕΙΣ DATA (ΜΕ ΠΡΟΣΤΑΣΙΑ ΓΙΑ NULL USER) ---
+  // --- 2. ΣΥΝΑΡΤΗΣΕΙΣ DATA ---
   const fetchClients = useCallback(async (userId) => {
-    // ΑΝ ΔΕΝ ΥΠΑΡΧΕΙ USERID, ΜΗΝ ΚΑΝΕΙΣ ΤΙΠΟΤΑ
     if (!userId) return 
-    
-    try {
-      const { data, error } = await supabase
-        .from("clients")
-        .select("*")
-        .eq("user_id", userId)
-        .eq("month", selectedMonth)
-        .order("created_at", { ascending: false })
+    const { data, error } = await supabase
+      .from("clients")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("month", selectedMonth)
+      .order("created_at", { ascending: false })
 
-      if (data) setClients(data)
-    } catch (err) {
-      console.error("Fetch error:", err)
-    }
+    if (data) setClients(data)
   }, [selectedMonth])
 
   useEffect(() => {
@@ -52,7 +47,7 @@ export default function Home() {
       const { data: { user: authUser } } = await supabase.auth.getUser()
       if (authUser) {
         setUser(authUser)
-        await fetchClients(authUser.id)
+        fetchClients(authUser.id)
       } else {
         router.push('/login')
       }
@@ -61,20 +56,41 @@ export default function Home() {
     initAuth()
   }, [fetchClients, router])
 
-  // --- 3. ΣΥΝΑΡΤΗΣΕΙΣ EDIT ---
+  // --- 3. ΛΟΓΙΚΗ ΦΠΑ (VAT STATUS) ---
+  function getVatStatus(client) {
+    if (!client?.vat_enabled || client?.vat_type === "none") return "none"
+    
+    const month = parseInt(selectedMonth.split("-")[1])
+    if (client.vat_type === "monthly") return "due"
+    if (client.vat_type === "quarterly") {
+      return [1, 4, 7, 10].includes(month) ? "due" : "ok"
+    }
+    return "ok"
+  }
+
+  // --- 4. ΣΥΝΑΡΤΗΣΕΙΣ EDIT ---
   function openEditModal(client) {
     setEditingClient(client)
     setEditName(client?.name || "")
     setEditFee(client?.monthly_fee || "")
-    setEditVatType(client?.vat_type || "monthly")
+    // Αν το vat_enabled είναι false, τότε το type είναι "none"
+    setEditVatType(!client?.vat_enabled ? "none" : client?.vat_type || "monthly")
     setIsEditModalOpen(true)
   }
 
   async function updateClient() {
     if (!editingClient || !user?.id) return
+    
+    const isVatEnabled = editVatType !== "none"
+    
     const { error } = await supabase
       .from("clients")
-      .update({ name: editName, monthly_fee: Number(editFee), vat_type: editVatType })
+      .update({ 
+        name: editName, 
+        monthly_fee: Number(editFee),
+        vat_enabled: isVatEnabled,
+        vat_type: isVatEnabled ? editVatType : "monthly" 
+      })
       .eq("id", editingClient.id)
 
     if (!error) {
@@ -83,27 +99,27 @@ export default function Home() {
     }
   }
 
-  // --- 4. ΛΟΓΙΚΗ ΦΠΑ ---
-  function getVatStatus(client) {
-    if (!client?.vat_enabled) return "none"
-    const month = parseInt(selectedMonth.split("-")[1])
-    if (client.vat_type === "monthly") return "due"
-    return [1, 4, 7, 10].includes(month) ? "due" : "ok"
-  }
-
-  // --- 5. CRUD ---
+  // --- 5. CRUD ΛΕΙΤΟΥΡΓΙΕΣ ---
   async function addClient() {
     if (!user?.id) return
+    const isVatEnabled = vatType !== "none"
+
     const { error } = await supabase.from("clients").insert([{
-      user_id: user.id, name, afm, monthly_fee: Number(fee) || 0,
-      payment_status: "pending", month: selectedMonth,
-      vat_enabled: true, vat_type: vatType, vat_submitted: false
+      user_id: user.id, 
+      name, 
+      afm, 
+      monthly_fee: Number(fee) || 0,
+      payment_status: "pending", 
+      month: selectedMonth,
+      vat_enabled: isVatEnabled,
+      vat_type: isVatEnabled ? vatType : "monthly",
+      vat_submitted: false
     }])
     if (!error) { setName(""); setAfm(""); setFee(""); fetchClients(user.id) }
   }
 
   async function copyClientsToNextMonth() {
-    if (!clients?.length || !user?.id) return alert("Δεν υπάρχουν δεδομένα")
+    if (!clients?.length || !user?.id) return alert("Δεν υπάρχουν πελάτες")
     let [year, month] = selectedMonth.split('-').map(Number)
     month++; if (month > 12) { month = 1; year++; }
     const nextMonthStr = `${year}-${String(month).padStart(2, '0')}`
@@ -126,7 +142,7 @@ export default function Home() {
   }
 
   async function toggleVatSubmitted(client) {
-    if (!user?.id) return
+    if (!user?.id || !client.vat_enabled) return
     await supabase.from("clients").update({ vat_submitted: !client.vat_submitted }).eq("id", client.id)
     fetchClients(user.id)
   }
@@ -137,10 +153,7 @@ export default function Home() {
     fetchClients(user.id)
   }
 
-  // --- ΠΡΟΣΤΑΣΙΑ: ΑΝ ΔΕΝ ΥΠΑΡΧΕΙ ΧΡΗΣΤΗΣ, ΔΕΙΞΕ LOADING ---
-  if (loading || !user) {
-    return <div className="flex h-screen items-center justify-center bg-[#F9F7F2] font-medium">Φόρτωση Dashboard...</div>
-  }
+  if (loading || !user) return <div className="flex h-screen items-center justify-center bg-[#F9F7F2]">Φόρτωση...</div>
 
   return (
     <div className="min-h-screen flex bg-[#F9F7F2]">
@@ -159,16 +172,19 @@ export default function Home() {
           <div className="bg-white p-4 rounded-xl shadow mb-6 border border-gray-100">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-gray-700">Νέος Πελάτης ({selectedMonth})</h3>
-              <button onClick={copyClientsToNextMonth} className="text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-lg font-bold">📋 Αντιγραφή</button>
+              <button onClick={copyClientsToNextMonth} className="text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-lg font-bold hover:bg-green-200 transition">📋 Αντιγραφή</button>
             </div>
             <div className="flex gap-2">
               <input placeholder="Όνομα" value={name} onChange={e => setName(e.target.value)} className="border p-2 rounded flex-1 outline-none" />
               <input placeholder="ΑΦΜ" value={afm} onChange={e => setAfm(e.target.value)} className="border p-2 rounded flex-1 outline-none" />
               <input placeholder="Αμοιβή" type="number" value={fee} onChange={e => setFee(e.target.value)} className="border p-2 rounded w-24 outline-none" />
+              
               <select value={vatType} onChange={e => setVatType(e.target.value)} className="border p-2 rounded text-sm bg-gray-50 outline-none">
                 <option value="monthly">Μηνιαίο ΦΠΑ</option>
                 <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+                <option value="none">Χωρίς ΦΠΑ</option>
               </select>
+
               <button onClick={addClient} className="bg-blue-600 text-white px-6 rounded-lg font-medium">Προσθήκη</button>
             </div>
           </div>
@@ -195,6 +211,7 @@ export default function Home() {
               <select value={editVatType} onChange={e => setEditVatType(e.target.value)} className="w-full border p-2 rounded">
                 <option value="monthly">Μηνιαίο ΦΠΑ</option>
                 <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+                <option value="none">Χωρίς ΦΠΑ</option>
               </select>
             </div>
             <div className="flex justify-end gap-2 mt-6">
