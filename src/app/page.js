@@ -16,31 +16,35 @@ export default function Home() {
   const [name, setName] = useState("")
   const [afm, setAfm] = useState("")
   const [fee, setFee] = useState("")
-  const [vatType, setVatType] = useState("monthly") // Νέο state για προσθήκη
-  
+  const [vatType, setVatType] = useState("monthly")
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7))
   const [clients, setClients] = useState([])
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // States για το Edit Modal
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingClient, setEditingClient] = useState(null)
   const [editName, setEditName] = useState("")
   const [editFee, setEditFee] = useState("")
-  const [editVatType, setEditVatType] = useState("monthly") // Νέο state για edit
+  const [editVatType, setEditVatType] = useState("monthly")
 
-  // --- 2. ΣΥΝΑΡΤΗΣΕΙΣ DATA ---
+  // --- 2. ΣΥΝΑΡΤΗΣΕΙΣ DATA (ΜΕ ΠΡΟΣΤΑΣΙΑ ΓΙΑ NULL USER) ---
   const fetchClients = useCallback(async (userId) => {
+    // ΑΝ ΔΕΝ ΥΠΑΡΧΕΙ USERID, ΜΗΝ ΚΑΝΕΙΣ ΤΙΠΟΤΑ
     if (!userId) return 
-    const { data, error } = await supabase
-      .from("clients")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("month", selectedMonth)
-      .order("created_at", { ascending: false })
+    
+    try {
+      const { data, error } = await supabase
+        .from("clients")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("month", selectedMonth)
+        .order("created_at", { ascending: false })
 
-    if (data) setClients(data)
+      if (data) setClients(data)
+    } catch (err) {
+      console.error("Fetch error:", err)
+    }
   }, [selectedMonth])
 
   useEffect(() => {
@@ -48,7 +52,7 @@ export default function Home() {
       const { data: { user: authUser } } = await supabase.auth.getUser()
       if (authUser) {
         setUser(authUser)
-        fetchClients(authUser.id)
+        await fetchClients(authUser.id)
       } else {
         router.push('/login')
       }
@@ -70,11 +74,7 @@ export default function Home() {
     if (!editingClient || !user?.id) return
     const { error } = await supabase
       .from("clients")
-      .update({ 
-        name: editName, 
-        monthly_fee: Number(editFee),
-        vat_type: editVatType 
-      })
+      .update({ name: editName, monthly_fee: Number(editFee), vat_type: editVatType })
       .eq("id", editingClient.id)
 
     if (!error) {
@@ -83,47 +83,34 @@ export default function Home() {
     }
   }
 
-  // --- 4. ΛΟΓΙΚΗ ΦΠΑ (VAT STATUS) ---
+  // --- 4. ΛΟΓΙΚΗ ΦΠΑ ---
   function getVatStatus(client) {
-    if (!client.vat_enabled) return "none"
-    
-    // Παίρνουμε τον αριθμό του μήνα (π.χ. 4 για τον Απρίλιο)
+    if (!client?.vat_enabled) return "none"
     const month = parseInt(selectedMonth.split("-")[1])
-
-    if (client.vat_type === "monthly") {
-      return "due" // Πάντα υποβολή
-    } else {
-      // Τριμηνιαίο: 1, 4, 7, 10
-      return [1, 4, 7, 10].includes(month) ? "due" : "ok"
-    }
+    if (client.vat_type === "monthly") return "due"
+    return [1, 4, 7, 10].includes(month) ? "due" : "ok"
   }
 
-  // --- 5. ΑΛΛΕΣ ΣΥΝΑΡΤΗΣΕΙΣ (ADD, COPY, DELETE, TOGGLE) ---
+  // --- 5. CRUD ---
   async function addClient() {
     if (!user?.id) return
     const { error } = await supabase.from("clients").insert([{
-      user_id: user.id, 
-      name, 
-      afm, 
-      monthly_fee: Number(fee) || 0,
-      payment_status: "pending", 
-      month: selectedMonth,
-      vat_enabled: true,
-      vat_type: vatType,
-      vat_submitted: false
+      user_id: user.id, name, afm, monthly_fee: Number(fee) || 0,
+      payment_status: "pending", month: selectedMonth,
+      vat_enabled: true, vat_type: vatType, vat_submitted: false
     }])
     if (!error) { setName(""); setAfm(""); setFee(""); fetchClients(user.id) }
   }
 
   async function copyClientsToNextMonth() {
-    if (!clients?.length) return alert("Δεν υπάρχουν πελάτες")
+    if (!clients?.length || !user?.id) return alert("Δεν υπάρχουν δεδομένα")
     let [year, month] = selectedMonth.split('-').map(Number)
     month++; if (month > 12) { month = 1; year++; }
     const nextMonthStr = `${year}-${String(month).padStart(2, '0')}`
 
     if (!confirm(`Αντιγραφή στον ${nextMonthStr};`)) return
     const newRecords = clients.map(c => ({
-      user_id: user?.id, name: c.name, afm: c.afm, monthly_fee: c.monthly_fee,
+      user_id: user.id, name: c.name, afm: c.afm, monthly_fee: c.monthly_fee,
       payment_status: "pending", month: nextMonthStr,
       vat_enabled: c.vat_enabled, vat_type: c.vat_type, vat_submitted: false
     }))
@@ -132,24 +119,28 @@ export default function Home() {
   }
 
   async function togglePayment(client) {
+    if (!user?.id) return
     const newStatus = client.payment_status === "paid" ? "pending" : "paid"
     await supabase.from("clients").update({ payment_status: newStatus }).eq("id", client.id)
     fetchClients(user.id)
   }
 
   async function toggleVatSubmitted(client) {
+    if (!user?.id) return
     await supabase.from("clients").update({ vat_submitted: !client.vat_submitted }).eq("id", client.id)
     fetchClients(user.id)
   }
 
   async function deleteClient(id) {
-    if (confirm("Διαγραφή;")) {
-      await supabase.from("clients").delete().eq("id", id)
-      fetchClients(user.id)
-    }
+    if (!user?.id || !confirm("Διαγραφή;")) return
+    await supabase.from("clients").delete().eq("id", id)
+    fetchClients(user.id)
   }
 
-  if (loading || !user) return <div className="flex h-screen items-center justify-center bg-[#F9F7F2]">Φόρτωση...</div>
+  // --- ΠΡΟΣΤΑΣΙΑ: ΑΝ ΔΕΝ ΥΠΑΡΧΕΙ ΧΡΗΣΤΗΣ, ΔΕΙΞΕ LOADING ---
+  if (loading || !user) {
+    return <div className="flex h-screen items-center justify-center bg-[#F9F7F2] font-medium">Φόρτωση Dashboard...</div>
+  }
 
   return (
     <div className="min-h-screen flex bg-[#F9F7F2]">
@@ -168,21 +159,17 @@ export default function Home() {
           <div className="bg-white p-4 rounded-xl shadow mb-6 border border-gray-100">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-gray-700">Νέος Πελάτης ({selectedMonth})</h3>
-              <button onClick={copyClientsToNextMonth} className="text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-lg font-bold">
-                📋 Αντιγραφή στον επόμενο μήνα
-              </button>
+              <button onClick={copyClientsToNextMonth} className="text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-lg font-bold">📋 Αντιγραφή</button>
             </div>
             <div className="flex gap-2">
               <input placeholder="Όνομα" value={name} onChange={e => setName(e.target.value)} className="border p-2 rounded flex-1 outline-none" />
               <input placeholder="ΑΦΜ" value={afm} onChange={e => setAfm(e.target.value)} className="border p-2 rounded flex-1 outline-none" />
               <input placeholder="Αμοιβή" type="number" value={fee} onChange={e => setFee(e.target.value)} className="border p-2 rounded w-24 outline-none" />
-              
               <select value={vatType} onChange={e => setVatType(e.target.value)} className="border p-2 rounded text-sm bg-gray-50 outline-none">
                 <option value="monthly">Μηνιαίο ΦΠΑ</option>
                 <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
               </select>
-
-              <button onClick={addClient} className="bg-blue-600 text-white px-6 rounded-lg hover:bg-blue-700 transition">Προσθήκη</button>
+              <button onClick={addClient} className="bg-blue-600 text-white px-6 rounded-lg font-medium">Προσθήκη</button>
             </div>
           </div>
 
@@ -197,31 +184,22 @@ export default function Home() {
         </div>
       </main>
 
-      {/* --- EDIT MODAL --- */}
+      {/* EDIT MODAL */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Επεξεργασία Πελάτη</h2>
             <div className="space-y-4">
-              <div>
-                <label className="text-xs text-gray-400">Όνομα</label>
-                <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full border p-2 rounded" />
-              </div>
-              <div>
-                <label className="text-xs text-gray-400">Αμοιβή (€)</label>
-                <input type="number" value={editFee} onChange={e => setEditFee(e.target.value)} className="w-full border p-2 rounded" />
-              </div>
-              <div>
-                <label className="text-xs text-gray-400">Τύπος ΦΠΑ</label>
-                <select value={editVatType} onChange={e => setEditVatType(e.target.value)} className="w-full border p-2 rounded">
-                  <option value="monthly">Μηνιαίο</option>
-                  <option value="quarterly">Τριμηνιαίο</option>
-                </select>
-              </div>
+              <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full border p-2 rounded" placeholder="Όνομα" />
+              <input type="number" value={editFee} onChange={e => setEditFee(e.target.value)} className="w-full border p-2 rounded" placeholder="Αμοιβή" />
+              <select value={editVatType} onChange={e => setEditVatType(e.target.value)} className="w-full border p-2 rounded">
+                <option value="monthly">Μηνιαίο ΦΠΑ</option>
+                <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+              </select>
             </div>
             <div className="flex justify-end gap-2 mt-6">
-              <button onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 text-gray-600 rounded">Ακύρωση</button>
-              <button onClick={updateClient} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Αποθήκευση</button>
+              <button onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 text-gray-600">Ακύρωση</button>
+              <button onClick={updateClient} className="px-4 py-2 bg-blue-600 text-white rounded">Αποθήκευση</button>
             </div>
           </div>
         </div>
