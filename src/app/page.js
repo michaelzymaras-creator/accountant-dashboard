@@ -188,6 +188,7 @@ export default function Home() {
                 <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
                 <option value="none">Χωρίς ΦΠΑ</option>
               </select>
+              
 
               <button onClick={addClient} className="bg-blue-600 text-white px-6 rounded-lg font-medium">Προσθήκη</button>
             </div>
@@ -217,6 +218,17 @@ export default function Home() {
                 <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
                 <option value="none">Χωρίς ΦΠΑ</option>
               </select>
+
+          <div>
+             <label className="text-xs text-gray-400">Σημειώσεις</label>
+                            <textarea 
+                                value={editNotes} 
+                                    onChange={e => setEditNotes(e.target.value)} 
+                                        className="w-full border p-2 rounded h-24 text-sm outline-none focus:ring-1 focus:ring-blue-400"
+                                            placeholder="π.χ. Εκκρεμεί η περιοδική, τηλέφωνο επικοινωνίας..."
+                                              />
+          </div>
+
             </div>
             <div className="flex justify-end gap-2 mt-6">
               <button onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 text-gray-600">Ακύρωση</button>
