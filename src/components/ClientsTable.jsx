@@ -105,14 +105,6 @@ className="border-t hover:bg-gray-50"
 {client.name}
 </td>
 
-<td className="p-4 font-medium">
-  {client.name}
-  {client.notes && (
-    <span className="ml-2 text-gray-400 cursor-help" title={client.notes}>
-      📝
-    </span>
-  )}
-</td>
 
 <td className="p-4">
 {client.afm}
