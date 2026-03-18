@@ -28,6 +28,8 @@ export default function Home() {
   const [editName, setEditName] = useState("")
   const [editFee, setEditFee] = useState("")
   const [editVatType, setEditVatType] = useState("monthly")
+  const [editNotes, setEditNotes] = useState("")
+
 
   // --- 2. ΣΥΝΑΡΤΗΣΕΙΣ DATA ---
   const fetchClients = useCallback(async (userId) => {
@@ -75,6 +77,7 @@ export default function Home() {
     setEditFee(client?.monthly_fee || "")
     // Αν το vat_enabled είναι false, τότε το type είναι "none"
     setEditVatType(!client?.vat_enabled ? "none" : client?.vat_type || "monthly")
+    setEditNotes(client?.notes || "")
     setIsEditModalOpen(true)
   }
 
@@ -89,7 +92,8 @@ export default function Home() {
         name: editName, 
         monthly_fee: Number(editFee),
         vat_enabled: isVatEnabled,
-        vat_type: isVatEnabled ? editVatType : "monthly" 
+        vat_type: isVatEnabled ? editVatType : "monthly",
+        notes: editNotes
       })
       .eq("id", editingClient.id)
 
