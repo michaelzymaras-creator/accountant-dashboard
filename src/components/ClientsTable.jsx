@@ -60,7 +60,7 @@ export default function ClientsTable({
                   
                   <td className="p-4">
                     <div className="flex flex-col items-center">
-                      <span className={`text-[10px] font-black uppercase ${vatInfo.status === "due" ? "text-orange-600" : "text-gray-400"}`}>
+                      <span className={`text-[10px] font-black uppercase ${vatInfo.status === "due" ? "text-black-600" : "text-gray-400"}`}>
                         {vatInfo.label}
                       </span>
                       {client.vat_enabled ? (

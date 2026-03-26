@@ -21,7 +21,7 @@ return (
 
 <div className="bg-white p-5 rounded-xl shadow">
 <p className="text-gray-500 text-sm">ΦΠΑ προς υποβολή</p>
-<h3 className="text-3xl font-bold text-orange-500">{vatDue}</h3>
+<h3 className="text-3xl font-bold text-red-500">{vatDue}</h3>
 </div>
 
 </div>
