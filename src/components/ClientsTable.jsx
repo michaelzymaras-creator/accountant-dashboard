@@ -7,7 +7,7 @@ export default function ClientsTable({
   toggleVatSubmitted,
   deleteClient,
   setEditingClient,
-  getVatStatus // Αυτό είναι το σωστό prop από το page.js
+  getVatStatus
 }){
 
   const [sortField, setSortField] = useState("name")
@@ -48,43 +48,49 @@ export default function ClientsTable({
           </thead>
           <tbody>
             {paginated.map(client => {
-              const vatInfo = getVatStatus(client); // Χρήση της συνάρτησης που περνάμε από το page.js
+              const vatInfo = getVatStatus(client); 
+              
               return (
                 <tr key={client.id} className="border-t hover:bg-gray-50 transition-colors">
                   <td className="p-4 font-bold text-slate-900">
                     {client.name}
-                    {client.notes && <span title={client.notes} className="ml-2 cursor-help">📝</span>}
+                    {client.notes && <span title={client.notes} className="ml-2 cursor-help text-lg">📝</span>}
                   </td>
                   <td className="p-4 text-slate-700">{client.afm}</td>
                   <td className="p-4 font-semibold text-slate-900">{client.monthly_fee} €</td>
                   
                   <td className="p-4">
-                    <div className="flex flex-col items-center">
-                      <span className={`text-[10px] font-black uppercase ${vatInfo.status === "due" ? "text-black-600" : "text-gray-400"}`}>
+                    <div className="flex flex-col items-center min-h-[40px] justify-center">
+                      <span className={`text-[10px] font-black uppercase mb-1 ${vatInfo.status === "due" ? "text-orange-600" : "text-gray-400"}`}>
                         {vatInfo.label}
                       </span>
-                      {client.vat_enabled ? (
-                        <span className={`text-lg font-bold ${client.vat_submitted ? "text-green-600" : "text-red-600"}`}>
+                      
+                      {/* ΕΜΦΑΝΙΣΗ ΣΥΜΒΟΛΟΥ ΜΟΝΟ ΑΝ ΕΙΝΑΙ ΦΠΑ-DUE (ΥΠΟΧΡΕΟΣ ΜΗΝΑΣ) */}
+                      {client.vat_enabled && vatInfo.status === "due" ? (
+                        <span className={`text-xl font-black ${client.vat_submitted ? "text-green-600" : "text-red-600"}`}>
                           {client.vat_submitted ? "✓" : "!"}
                         </span>
-                      ) : <span className="text-gray-300">-</span>}
+                      ) : (
+                        <span className="text-gray-200">-</span>
+                      )}
                     </div>
                   </td>
 
                   <td className="p-4 flex gap-2">
                     <button
                       onClick={() => togglePayment(client)}
-                      className={`px-3 py-1 text-xs rounded font-bold transition ${
+                      className={`px-3 py-1.5 text-xs rounded font-black transition shadow-sm ${
                         client.payment_status === "paid" ? "bg-green-600 text-white" : "bg-blue-600 text-white"
                       }`}
                     >
-                      {client.payment_status === "paid" ? "Πληρώθηκε" : "Πληρωμή"}
+                      {client.payment_status === "paid" ? "ΠΛΗΡΩΘΗΚΕ" : "ΠΛΗΡΩΜΗ"}
                     </button>
 
-                    {client.vat_enabled && (
+                    {/* ΤΟ ΚΟΥΜΠΙ ΦΠΑ ΕΜΦΑΝΙΖΕΤΑΙ ΜΟΝΟ ΑΝ ΕΙΝΑΙ ΜΗΝΑΣ ΥΠΟΒΟΛΗΣ */}
+                    {client.vat_enabled && vatInfo.status === "due" && (
                       <button
                         onClick={() => toggleVatSubmitted(client)}
-                        className={`px-3 py-1 text-xs rounded font-bold transition ${
+                        className={`px-3 py-1.5 text-xs rounded font-black transition shadow-sm ${
                           client.vat_submitted ? "bg-green-600 text-white" : "bg-orange-500 text-white"
                         }`}
                       >
@@ -92,8 +98,8 @@ export default function ClientsTable({
                       </button>
                     )}
 
-                    <button onClick={() => setEditingClient(client)} className="px-3 py-1 text-xs rounded bg-gray-200 font-bold hover:bg-gray-300">Edit</button>
-                    <button onClick={() => deleteClient(client.id)} className="px-3 py-1 text-xs rounded bg-red-600 text-white font-bold hover:bg-red-700">Delete</button>
+                    <button onClick={() => setEditingClient(client)} className="px-3 py-1.5 text-xs rounded bg-gray-200 font-black hover:bg-gray-300 text-slate-700">EDIT</button>
+                    <button onClick={() => deleteClient(client.id)} className="px-3 py-1.5 text-xs rounded bg-red-600 text-white font-black hover:bg-red-700">DELETE</button>
                   </td>
                 </tr>
               )
@@ -102,12 +108,11 @@ export default function ClientsTable({
         </table>
       </div>
 
-      {/* PAGINATION */}
-      <div className="flex justify-between items-center p-4 text-sm font-bold text-slate-700 border-t bg-gray-50">
+      <div className="flex justify-between items-center p-4 text-sm font-bold text-slate-700 border-t bg-gray-50 uppercase">
         <p>Σελίδα {page} / {totalPages || 1}</p>
         <div className="flex gap-2">
-          <button onClick={() => setPage(page - 1)} disabled={page === 1} className="px-3 py-1 border rounded bg-white disabled:opacity-50">Prev</button>
-          <button onClick={() => setPage(page + 1)} disabled={page === totalPages} className="px-3 py-1 border rounded bg-white disabled:opacity-50">Next</button>
+          <button onClick={() => setPage(page - 1)} disabled={page === 1} className="px-4 py-1.5 border rounded bg-white disabled:opacity-50 shadow-sm">Πίσω</button>
+          <button onClick={() => setPage(page + 1)} disabled={page === totalPages} className="px-4 py-1.5 border rounded bg-white disabled:opacity-50 shadow-sm">Επόμενο</button>
         </div>
       </div>
     </div>
