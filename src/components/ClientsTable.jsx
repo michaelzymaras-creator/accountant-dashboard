@@ -105,7 +105,6 @@ className="border-t hover:bg-gray-50"
 {client.name}
 </td>
 
-
 <td className="p-4">
 {client.afm}
 </td>
