@@ -178,29 +178,47 @@ client.payment_status==="paid"
 </td>
 
 <td className="p-4 flex gap-2">
+  {/* Κουμπί Πληρωμής */}
+  <button
+    onClick={() => togglePayment(client)}
+    className={`px-2 py-1 text-xs rounded font-medium transition ${
+      client.payment_status === "paid" 
+        ? "bg-green-600 text-white" 
+        : "bg-blue-600 text-white"
+    }`}
+  >
+    {client.payment_status === "paid" ? "Πληρώθηκε" : "Πληρωμή"}
+  </button>
 
-<button
-onClick={()=>togglePayment(client)}
-className="px-2 py-1 text-xs rounded bg-blue-600 text-white"
->
-Πληρωμή
-</button>
+  {/* ΝΕΟ Κουμπί ΦΠΑ (εμφανίζεται μόνο αν ο πελάτης έχει ΦΠΑ) */}
+  {client.vat_enabled && (
+    <button
+      onClick={() => toggleVatSubmitted(client)}
+      className={`px-2 py-1 text-xs rounded font-medium transition ${
+        client.vat_submitted 
+          ? "bg-green-600 text-white" 
+          : "bg-orange-500 text-white"
+      }`}
+    >
+      {client.vat_submitted ? "ΦΠΑ ✓" : "ΦΠΑ !"}
+    </button>
+  )}
 
-<button
-onClick={()=>setEditingClient(client)}
-className="px-2 py-1 text-xs rounded bg-gray-200"
->
-Edit
-</button>
+  <button
+    onClick={() => setEditingClient(client)}
+    className="px-2 py-1 text-xs rounded bg-gray-200 hover:bg-gray-300 transition"
+  >
+    Edit
+  </button>
 
-<button
-onClick={()=>deleteClient(client.id)}
-className="px-2 py-1 text-xs rounded bg-red-600 text-white"
->
-Delete
-</button>
-
+  <button
+    onClick={() => deleteClient(client.id)}
+    className="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 transition"
+  >
+    Delete
+  </button>
 </td>
+
 
 </tr>
 
