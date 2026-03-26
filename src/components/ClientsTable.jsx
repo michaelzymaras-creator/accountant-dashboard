@@ -88,6 +88,15 @@ className="p-4 text-left cursor-pointer"
 Ενέργειες
 </th>
 
+<td className="p-4 font-medium">
+  {client.name}
+  {client.notes && (
+    <span className="ml-2 text-gray-400 cursor-help" title={client.notes}>
+      📝
+    </span>
+  )}
+</td>
+
 </tr>
 
 </thead>
