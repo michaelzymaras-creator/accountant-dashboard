@@ -82,13 +82,36 @@ export default function Home() {
     }
   }
 
-  function getVatStatus(client) {
-    if (!client?.vat_enabled || client?.vat_type === "none") return "none"
-    const month = parseInt(selectedMonth.split("-")[1])
-    if (client.vat_type === "monthly") return "due"
-    const quarterlyMonths = [1, 4, 7, 10]
-    return quarterlyMonths.includes(month) ? "due" : "ok"
+function getVatInfo(client) {
+  if (!client?.vat_enabled || client?.vat_type === "none") return { status: "none", label: "-" };
+
+  const [year, month] = selectedMonth.split("-").map(Number);
+
+  if (client.vat_type === "monthly") {
+    // Για τα μηνιαία, υποβάλλουμε τον προηγούμενο μήνα
+    const prevMonthNum = month === 1 ? 12 : month - 1;
+    const monthsGr = ["", "Ιαν", "Φεβ", "Μαρ", "Απρ", "Μαϊ", "Ιουν", "Ιουλ", "Αυγ", "Σεπ", "Οκτ", "Νοε", "Δεκ"];
+    return { status: "due", label: `ΦΠΑ ${monthsGr[prevMonthNum]}` };
+  } 
+
+  if (client.vat_type === "quarterly") {
+    // Τριμηνιαία: Υποβολή τον 1ο, 4ο, 7ο, 10ο μήνα για το προηγούμενο τρίμηνο
+    const quarters = {
+      1: "Δ' Τρίμηνο", // Τον Ιανουάριο στέλνουμε Οκτ-Νοε-Δεκ
+      4: "Α' Τρίμηνο", // Τον Απρίλιο στέλνουμε Ιαν-Φεβ-Μαρ
+      7: "Β' Τρίμηνο", // Τον Ιούλιο στέλνουμε Απρ-Μαϊ-Ιουν
+      10: "Γ' Τρίμηνο" // Τον Οκτώβριο στέλνουμε Ιουλ-Αυγ-Σεπ
+    };
+
+    if (quarters[month]) {
+      return { status: "due", label: quarters[month] };
+    }
+    return { status: "ok", label: "Αναμονή" };
   }
+
+  return { status: "ok", label: "-" };
+}
+
 
   async function addClient() {
     if (!user?.id) return
@@ -148,7 +171,7 @@ export default function Home() {
             totalClients={clients?.length || 0}
             unpaidClients={clients?.filter(c => c.payment_status === "pending").length || 0}
             totalIncome={clients?.filter(c => c.payment_status === "paid").reduce((sum, c) => sum + (Number(c.monthly_fee) || 0), 0) || 0}
-            vatDue={clients?.filter(c => getVatStatus(c) === "due" && !c.vat_submitted).length || 0}
+            vatDue={clients?.filter(c => getVatInfo(c).status === "due" && !c.vat_submitted).length || 0}
           />
           <div className="bg-white p-4 rounded-xl shadow mb-6 border border-gray-100">
             <div className="flex justify-between items-center mb-4 text-gray-700">
@@ -208,3 +231,4 @@ export default function Home() {
     </div>
   )
 }
+

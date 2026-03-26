@@ -119,63 +119,21 @@ className="border-t hover:bg-gray-50"
 </td>
 
 <td className="p-4">
-
-<span
-className={`px-2 py-1 rounded text-xs font-semibold ${
-client.payment_status==="paid"
-?"bg-green-100 text-green-700"
-:"bg-red-100 text-red-700"
-}`}
->
-
-{client.payment_status==="paid"
-?"Πληρώθηκε"
-:"Απλήρωτος"}
-
-</span>
-
+  <div className="flex flex-col items-center">
+    <span className={`text-[10px] font-bold uppercase ${
+      getVatInfo(client).status === "due" ? "text-orange-600" : "text-gray-400"
+    }`}>
+      {getVatInfo(client).label}
+    </span>
+    
+    {client.vat_enabled && (
+      <span className={client.vat_submitted ? "text-green-600" : "text-red-600"}>
+        {client.vat_submitted ? "✓" : "!"}
+      </span>
+    )}
+  </div>
 </td>
 
-<td className="p-4">
-
-{client.vat_enabled ? (
-
-<div className="flex gap-2 text-xs">
-
-<span>
-{client.vat_type==="monthly"
-?"Μηνιαίο"
-:"Τριμηνιαίο"}
-</span>
-
-{client.vat_submitted ? (
-<span className="text-green-600">
-✓
-</span>
-):(
-<span className="text-red-500">
-!
-</span>
-)}
-
-{getVatStatus(client)==="due" &&
-!client.vat_submitted &&(
-<span className="text-orange-600">
-⚠
-</span>
-)}
-
-</div>
-
-):(
-
-<span className="text-gray-400 text-xs">
--
-</span>
-
-)}
-
-</td>
 
 <td className="p-4 flex gap-2">
   {/* Κουμπί Πληρωμής */}
