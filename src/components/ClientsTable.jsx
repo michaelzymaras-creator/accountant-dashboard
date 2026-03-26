@@ -61,7 +61,7 @@ export default function ClientsTable({
                   
                   <td className="p-4">
                     <div className="flex flex-col items-center min-h-[40px] justify-center">
-                      <span className={`text-[10px] font-black uppercase mb-1 ${vatInfo.status === "due" ? "text-orange-600" : "text-gray-400"}`}>
+                      <span className={`text-[10px] font-black uppercase mb-1 ${vatInfo.status === "due" ? "text-black-600" : "text-gray-400"}`}>
                         {vatInfo.label}
                       </span>
                       
@@ -91,7 +91,7 @@ export default function ClientsTable({
                       <button
                         onClick={() => toggleVatSubmitted(client)}
                         className={`px-3 py-1.5 text-xs rounded font-black transition shadow-sm ${
-                          client.vat_submitted ? "bg-green-600 text-white" : "bg-orange-500 text-white"
+                          client.vat_submitted ? "bg-green-600 text-white" : "bg-onge-500 text-white"
                         }`}
                       >
                         {client.vat_submitted ? "ΦΠΑ ✓" : "ΦΠΑ !"}
