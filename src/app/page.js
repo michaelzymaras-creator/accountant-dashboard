@@ -12,6 +12,7 @@ import ClientsTable from "../components/ClientsTable"
 export default function Home() {
   const router = useRouter()
   
+  // --- 1. STATES ---
   const [name, setName] = useState("")
   const [afm, setAfm] = useState("")
   const [fee, setFee] = useState("")
@@ -26,8 +27,25 @@ export default function Home() {
   const [editName, setEditName] = useState("")
   const [editFee, setEditFee] = useState("")
   const [editVatType, setEditVatType] = useState("monthly")
-  const [editNotes, setEditNotes] = useState("") // ΝΕΟ: State για σημειώσεις
+  const [editNotes, setEditNotes] = useState("")
 
+  // --- 2. ΛΟΓΙΚΗ ΦΠΑ ---
+  const getVatStatus = (client) => {
+    if (!client?.vat_enabled || client?.vat_type === "none") return { status: "none", label: "-" };
+    const month = parseInt(selectedMonth.split("-")[1]);
+    const monthsGr = ["", "Ιαν", "Φεβ", "Μαρ", "Απρ", "Μαϊ", "Ιουν", "Ιουλ", "Αυγ", "Σεπ", "Οκτ", "Νοε", "Δεκ"];
+    if (client.vat_type === "monthly") {
+      const prevMonth = month === 1 ? 12 : month - 1;
+      return { status: "due", label: `ΦΠΑ ${monthsGr[prevMonth]}` };
+    }
+    if (client.vat_type === "quarterly") {
+      const quarters = { 1: "Δ' Τρίμ", 4: "Α' Τρίμ", 7: "Β' Τρίμ", 10: "Γ' Τρίμ" };
+      return quarters[month] ? { status: "due", label: quarters[month] } : { status: "ok", label: "Αναμονή" };
+    }
+    return { status: "ok", label: "-" };
+  };
+
+  // --- 3. ΣΥΝΑΡΤΗΣΕΙΣ DATA (ΜΕ ΕΛΕΓΧΟ USER) ---
   const fetchClients = useCallback(async (userId) => {
     if (!userId) return 
     const { data } = await supabase
@@ -53,66 +71,7 @@ export default function Home() {
     initAuth()
   }, [fetchClients, router])
 
-  function openEditModal(client) {
-    setEditingClient(client)
-    setEditName(client?.name || "")
-    setEditFee(client?.monthly_fee || "")
-    setEditVatType(!client?.vat_enabled ? "none" : client?.vat_type || "monthly")
-    setEditNotes(client?.notes || "") // Φόρτωση σημειώσεων
-    setIsEditModalOpen(true)
-  }
-
-  async function updateClient() {
-    if (!editingClient || !user?.id) return
-    const isVatEnabled = editVatType !== "none"
-    const { error } = await supabase
-      .from("clients")
-      .update({ 
-        name: editName, 
-        monthly_fee: Number(editFee),
-        vat_enabled: isVatEnabled,
-        vat_type: isVatEnabled ? editVatType : "monthly",
-        notes: editNotes // Αποθήκευση σημειώσεων
-      })
-      .eq("id", editingClient.id)
-
-    if (!error) {
-      setIsEditModalOpen(false)
-      fetchClients(user.id)
-    }
-  }
-
-function getVatInfo(client) {
-  if (!client?.vat_enabled || client?.vat_type === "none") return { status: "none", label: "-" };
-
-  const [year, month] = selectedMonth.split("-").map(Number);
-
-  if (client.vat_type === "monthly") {
-    // Για τα μηνιαία, υποβάλλουμε τον προηγούμενο μήνα
-    const prevMonthNum = month === 1 ? 12 : month - 1;
-    const monthsGr = ["", "Ιαν", "Φεβ", "Μαρ", "Απρ", "Μαϊ", "Ιουν", "Ιουλ", "Αυγ", "Σεπ", "Οκτ", "Νοε", "Δεκ"];
-    return { status: "due", label: `ΦΠΑ ${monthsGr[prevMonthNum]}` };
-  } 
-
-  if (client.vat_type === "quarterly") {
-    // Τριμηνιαία: Υποβολή τον 1ο, 4ο, 7ο, 10ο μήνα για το προηγούμενο τρίμηνο
-    const quarters = {
-      1: "Δ' Τρίμηνο", // Τον Ιανουάριο στέλνουμε Οκτ-Νοε-Δεκ
-      4: "Α' Τρίμηνο", // Τον Απρίλιο στέλνουμε Ιαν-Φεβ-Μαρ
-      7: "Β' Τρίμηνο", // Τον Ιούλιο στέλνουμε Απρ-Μαϊ-Ιουν
-      10: "Γ' Τρίμηνο" // Τον Οκτώβριο στέλνουμε Ιουλ-Αυγ-Σεπ
-    };
-
-    if (quarters[month]) {
-      return { status: "due", label: quarters[month] };
-    }
-    return { status: "ok", label: "Αναμονή" };
-  }
-
-  return { status: "ok", label: "-" };
-}
-
-
+  // --- 4. CRUD ΛΕΙΤΟΥΡΓΙΕΣ ---
   async function addClient() {
     if (!user?.id) return
     const isVatEnabled = vatType !== "none"
@@ -125,19 +84,18 @@ function getVatInfo(client) {
     if (!error) { setName(""); setAfm(""); setFee(""); fetchClients(user.id) }
   }
 
-  async function copyClientsToNextMonth() {
-    if (!clients?.length || !user?.id) return alert("Δεν υπάρχουν πελάτες")
-    let [year, month] = selectedMonth.split('-').map(Number)
-    month++; if (month > 12) { month = 1; year++; }
-    const nextMonthStr = `${year}-${String(month).padStart(2, '0')}`
-    if (!confirm(`Αντιγραφή στον ${nextMonthStr};`)) return
-    const newRecords = clients.map(c => ({
-      user_id: user.id, name: c.name, afm: c.afm, monthly_fee: c.monthly_fee,
-      payment_status: "pending", month: nextMonthStr,
-      vat_enabled: c.vat_enabled, vat_type: c.vat_type, vat_submitted: false, notes: c.notes
-    }))
-    const { error } = await supabase.from("clients").insert(newRecords)
-    if (!error) { alert("Έγινε!"); setSelectedMonth(nextMonthStr) }
+  async function updateClient() {
+    if (!editingClient || !user?.id) return
+    const isVatEnabled = editVatType !== "none"
+    const { error } = await supabase
+      .from("clients")
+      .update({ 
+        name: editName, monthly_fee: Number(editFee),
+        vat_enabled: isVatEnabled, vat_type: isVatEnabled ? editVatType : "monthly",
+        notes: editNotes 
+      })
+      .eq("id", editingClient.id)
+    if (!error) { setIsEditModalOpen(false); fetchClients(user.id); }
   }
 
   async function togglePayment(client) {
@@ -148,7 +106,7 @@ function getVatInfo(client) {
   }
 
   async function toggleVatSubmitted(client) {
-    if (!user?.id || !client.vat_enabled) return
+    if (!user?.id) return
     await supabase.from("clients").update({ vat_submitted: !client.vat_submitted }).eq("id", client.id)
     fetchClients(user.id)
   }
@@ -159,10 +117,22 @@ function getVatInfo(client) {
     fetchClients(user.id)
   }
 
-  if (loading || !user) return <div className="flex h-screen items-center justify-center bg-[#F9F7F2]">Φόρτωση...</div>
+  function openEditModal(client) {
+    setEditingClient(client)
+    setEditName(client?.name || "")
+    setEditFee(client?.monthly_fee || "")
+    setEditVatType(!client?.vat_enabled ? "none" : client?.vat_type || "monthly")
+    setEditNotes(client?.notes || "")
+    setIsEditModalOpen(true)
+  }
+
+  // --- ΠΡΟΣΤΑΣΙΑ: ΑΝ ΔΕΝ ΥΠΑΡΧΕΙ USER, ΜΗΝ ΔΕΙΧΝΕΙΣ ΤΟ UI ---
+  if (loading || !user) {
+    return <div className="flex h-screen items-center justify-center bg-[#F9F7F2] text-slate-900 font-bold">Φόρτωση Dashboard...</div>
+  }
 
   return (
-    <div className="min-h-screen flex bg-[#F9F7F2]">
+    <div className="min-h-screen flex bg-[#F9F7F2] text-slate-900">
       <Sidebar />
       <main className="flex-1 p-8">
         <div className="max-w-7xl mx-auto">
@@ -171,23 +141,20 @@ function getVatInfo(client) {
             totalClients={clients?.length || 0}
             unpaidClients={clients?.filter(c => c.payment_status === "pending").length || 0}
             totalIncome={clients?.filter(c => c.payment_status === "paid").reduce((sum, c) => sum + (Number(c.monthly_fee) || 0), 0) || 0}
-            vatDue={clients?.filter(c => getVatInfo(c).status === "due" && !c.vat_submitted).length || 0}
+            vatDue={clients?.filter(c => getVatStatus(c).status === "due" && !c.vat_submitted).length || 0}
           />
-          <div className="bg-white p-4 rounded-xl shadow mb-6 border border-gray-100">
-            <div className="flex justify-between items-center mb-4 text-gray-700">
-              <h3 className="font-semibold">Νέος Πελάτης ({selectedMonth})</h3>
-              <button onClick={copyClientsToNextMonth} className="text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-lg font-bold">📋 Αντιγραφή</button>
-            </div>
+          <div className="bg-white p-4 rounded-xl shadow mb-6 border border-gray-200">
+            <h3 className="font-bold mb-4">Νέος Πελάτης ({selectedMonth})</h3>
             <div className="flex gap-2">
-              <input placeholder="Όνομα" value={name} onChange={e => setName(e.target.value)} className="border p-2 rounded flex-1 outline-none" />
-              <input placeholder="ΑΦΜ" value={afm} onChange={e => setAfm(e.target.value)} className="border p-2 rounded flex-1 outline-none" />
-              <input placeholder="Αμοιβή" type="number" value={fee} onChange={e => setFee(e.target.value)} className="border p-2 rounded w-24 outline-none" />
-              <select value={vatType} onChange={e => setVatType(e.target.value)} className="border p-2 rounded text-sm bg-gray-50 outline-none">
-                <option value="monthly">Μηνιαίο ΦΠΑ</option>
-                <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+              <input placeholder="Όνομα" value={name} onChange={e => setName(e.target.value)} className="border p-2 rounded flex-1 border-gray-300 outline-none focus:border-blue-500" />
+              <input placeholder="ΑΦΜ" value={afm} onChange={e => setAfm(e.target.value)} className="border p-2 rounded flex-1 border-gray-300 outline-none" />
+              <input placeholder="Αμοιβή" type="number" value={fee} onChange={e => setFee(e.target.value)} className="border p-2 rounded w-24 border-gray-300 outline-none" />
+              <select value={vatType} onChange={e => setVatType(e.target.value)} className="border p-2 rounded bg-gray-50 border-gray-300 outline-none">
+                <option value="monthly">Μηνιαίο</option>
+                <option value="quarterly">Τριμηνιαίο</option>
                 <option value="none">Χωρίς ΦΠΑ</option>
               </select>
-              <button onClick={addClient} className="bg-blue-600 text-white px-6 rounded-lg font-medium hover:bg-blue-700">Προσθήκη</button>
+              <button onClick={addClient} className="bg-blue-600 text-white px-6 rounded-lg font-bold hover:bg-blue-700 transition">Προσθήκη</button>
             </div>
           </div>
           <ClientsTable
@@ -202,28 +169,22 @@ function getVatInfo(client) {
       </main>
 
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Επεξεργασία Πελάτη</h2>
             <div className="space-y-4">
-              <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full border p-2 rounded" placeholder="Όνομα" />
-              <input type="number" value={editFee} onChange={e => setEditFee(e.target.value)} className="w-full border p-2 rounded" placeholder="Αμοιβή" />
-              <select value={editVatType} onChange={e => setEditVatType(e.target.value)} className="w-full border p-2 rounded">
-                <option value="monthly">Μηνιαίο ΦΠΑ</option>
-                <option value="quarterly">Τριμηνιαίο ΦΠΑ</option>
+              <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full border p-2 rounded border-gray-300" placeholder="Όνομα" />
+              <input type="number" value={editFee} onChange={e => setEditFee(e.target.value)} className="w-full border p-2 rounded border-gray-300" placeholder="Αμοιβή" />
+              <select value={editVatType} onChange={e => setEditVatType(e.target.value)} className="w-full border p-2 rounded border-gray-300">
+                <option value="monthly">Μηνιαίο</option>
+                <option value="quarterly">Τριμηνιαίο</option>
                 <option value="none">Χωρίς ΦΠΑ</option>
               </select>
-              {/* ΠΕΔΙΟ ΣΗΜΕΙΩΣΕΩΝ */}
-              <textarea 
-                value={editNotes} 
-                onChange={e => setEditNotes(e.target.value)} 
-                className="w-full border p-2 rounded h-24 text-sm" 
-                placeholder="Σημειώσεις (π.χ. εκκρεμεί τιμολόγιο)..."
-              />
+              <textarea value={editNotes} onChange={e => setEditNotes(e.target.value)} className="w-full border p-2 rounded h-24 border-gray-300" placeholder="Σημειώσεις..." />
             </div>
             <div className="flex justify-end gap-2 mt-6">
-              <button onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 text-gray-600">Ακύρωση</button>
-              <button onClick={updateClient} className="px-4 py-2 bg-blue-600 text-white rounded">Αποθήκευση</button>
+              <button onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 text-gray-600 font-medium">Ακύρωση</button>
+              <button onClick={updateClient} className="px-4 py-2 bg-blue-600 text-white rounded font-bold">Αποθήκευση</button>
             </div>
           </div>
         </div>
@@ -231,4 +192,3 @@ function getVatInfo(client) {
     </div>
   )
 }
-
