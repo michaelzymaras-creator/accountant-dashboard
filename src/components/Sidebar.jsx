@@ -24,11 +24,11 @@ export default function Sidebar() {
 
       {/* Overlay για να κλείνει το μενού πατώντας έξω */}
       {isOpen && (
-        <div onClick={() => setIsOpen(false)} className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[101] md:hidden"></div>
+        <div onClick={() => setIsOpen(false)} className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] md:hidden"></div>
       )}
 
       <aside className={`
-        fixed inset-y-0 left-0 z-[105] w-64 bg-white shadow-lg p-6 flex flex-col h-screen transition-transform duration-300
+        fixed inset-y-0 left-0 z-[70] w-64 bg-white shadow-lg p-6 flex flex-col h-screen transition-transform duration-300
         md:sticky md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="mb-10 mt-8 md:mt-0">
