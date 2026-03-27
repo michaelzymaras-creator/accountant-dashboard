@@ -37,10 +37,15 @@ export default function Sidebar() {
         </div>
 
         <nav className="flex flex-col gap-2 text-[11px] font-black uppercase tracking-widest flex-1">
-          <Link href="/" className="p-4 rounded-xl bg-blue-50 text-blue-600 flex items-center gap-3">📊 ΑΡΧΙΚΗ</Link>
-          <button className="p-4 rounded-xl hover:bg-gray-50 text-left flex items-center gap-3 text-slate-500">👥 ΠΕΛΑΤΕΣ</button>
-          <button className="p-4 rounded-xl hover:bg-gray-50 text-left flex items-center gap-3 text-slate-500">📄 ΑΝΑΦΟΡΕΣ</button>
-        </nav>
+  <Link href="/" className="p-4 rounded-xl hover:bg-blue-50 text-slate-500 flex items-center gap-3">
+    📊 ΑΡΧΙΚΗ
+  </Link>
+  <Link href="/clients" className="p-4 rounded-xl hover:bg-blue-50 text-slate-500 flex items-center gap-3">
+    👥 ΠΕΛΑΤΕΣ
+  </Link>
+  {/* ... υπόλοιπα */}
+</nav>
+
 
         <div className="border-t pt-4">
           <button onClick={handleLogout} className="p-4 w-full rounded-xl text-red-600 hover:bg-red-50 transition-colors text-left flex items-center gap-3 font-black text-[11px] uppercase">
