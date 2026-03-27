@@ -110,7 +110,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex bg-[#F9F7F2] text-slate-900 font-sans antialiased">
       <Sidebar />
-      <main className="flex-1 p-10 overflow-y-auto">
+      <main className="flex-1 p-4 md:p-10 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
           
           <div className="flex justify-between items-end mb-10">
