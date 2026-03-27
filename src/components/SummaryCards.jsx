@@ -8,7 +8,7 @@ export default function SummaryCards({ pendingVatCount, currentIncome, totalOffi
         <div className="absolute top-0 left-0 w-1.5 h-full bg-orange-500"></div>
         <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">ΦΠΑ Προς Υποβολή</p>
         <h4 className="text-4xl font-black text-orange-600">{pendingVatCount}</h4>
-        <div className="absolute top-6 right-6 text-3xl opacity-20 transition-opacity">⚠️</div>
+        <div className="absolute top-6 right-6 text-3xl transition-opacity">⚠️</div>
       </div>
       
       {/* ΕΙΣΠΡΑΞΕΙΣ */}
@@ -18,7 +18,7 @@ export default function SummaryCards({ pendingVatCount, currentIncome, totalOffi
         <h4 className="text-4xl font-black text-slate-900">
           {currentIncome}€ <span className="text-sm text-red-500 font-bold ml-1 italic">/ {totalOfficeDebt}€</span>
         </h4>
-        <div className="absolute top-6 right-6 text-3xl opacity-20 transition-opacity">💰</div>
+        <div className="absolute top-6 right-6 text-3xl transition-opacity">💰</div>
       </div>
 
       {/* ΕΚΚΡΕΜΟΤΗΤΕΣ */}
@@ -28,7 +28,7 @@ export default function SummaryCards({ pendingVatCount, currentIncome, totalOffi
         <h4 className="text-4xl font-black text-red-600">
           {unpaidCount} <span className="text-sm text-gray-400 font-bold ml-1 italic">({overdueCount} παλιά)</span>
         </h4>
-        <div className="absolute top-6 right-6 text-3xl opacity-20 transition-opacity">🚨</div>
+        <div className="absolute top-6 right-6 text-3xl transition-opacity">🚨</div>
       </div>
     </div>
   )
